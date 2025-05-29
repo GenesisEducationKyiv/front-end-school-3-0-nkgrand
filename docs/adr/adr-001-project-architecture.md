@@ -36,6 +36,9 @@ The following decisions were made:
 - **`data-testid` attributes** for e2e test coverage (e.g., Playwright / Cypress in the future).
 - **Lodash** for search debounce and utility functions.
 
+## Status
+**Accepted**
+
 ## Code Structure
 
 The project is structured by functional domains:
