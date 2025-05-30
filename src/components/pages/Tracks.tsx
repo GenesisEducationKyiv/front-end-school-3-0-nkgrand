@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback, useMemo } from 'react';
 import { Space, Col, Typography, notification } from 'antd';
 import { observer } from 'mobx-react-lite';
-import type { Track } from '../../types/trackTypes';
+import { type Track } from '../../schemas/track.schema';
 import { CreateEditTrackModal } from './__components/CreateEditTrackModal';
 import { debounce } from 'lodash';
 import { Controls } from './__components/Controls';

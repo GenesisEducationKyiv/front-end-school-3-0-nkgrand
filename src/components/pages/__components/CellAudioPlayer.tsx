@@ -1,6 +1,6 @@
 import { Upload, Button, Popconfirm, Space } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
-import type { Track } from '../../../types/trackTypes';
+import { type Track } from '../../../schemas/track.schema';
 import { TrackPlayer } from './TrackPlayer';
 import useNotification from 'antd/es/notification/useNotification';
 import { useTrackStore } from '../../../context/TrackStoreContext';

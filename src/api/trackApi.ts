@@ -1,5 +1,5 @@
 import axios from 'axios';
-import type { Track } from '../types/trackTypes';
+import { type Track } from '../schemas/track.schema';
 
 export const fetchTracks = (page?: number, limit?: number) =>
   axios.get('/api/tracks', { params: { page, limit } });
@@ -28,4 +28,3 @@ export const uploadTrackFile = (trackId: string, file: File) => {
 
 export const removeTrackFile = (trackId: string) =>
   axios.delete(`/api/tracks/${trackId}/file`);
-

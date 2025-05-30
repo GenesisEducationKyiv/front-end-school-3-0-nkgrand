@@ -1,6 +1,6 @@
 import { TrackStore } from '../stores/TrackStore';
 import * as trackApi from '../api/trackApi';
-import type { Track } from '../types/trackTypes';
+import { type Track } from '../schemas/track.schema';
 
 jest.mock('../api/trackApi');
 
@@ -27,6 +27,7 @@ describe('TrackStore', () => {
       createdAt: '',
       updatedAt: '',
       slug: '',
+      fileUrl: '',
     };
 
     const realTrack: Track = { ...newTrack, id: 'real-track-id' };
@@ -51,6 +52,7 @@ describe('TrackStore', () => {
       createdAt: '',
       updatedAt: '',
       slug: '',
+      fileUrl: '',
     };
 
     store.tracks = [track];
@@ -79,6 +81,7 @@ describe('TrackStore', () => {
         createdAt: '',
         updatedAt: '',
         slug: '',
+        fileUrl: '',
       },
     ];
     (trackApi.deleteTrack as jest.Mock).mockResolvedValue({});
@@ -101,6 +104,7 @@ describe('TrackStore', () => {
         createdAt: '',
         updatedAt: '',
         slug: '',
+        fileUrl: '',
       },
       {
         id: 't2',
@@ -113,6 +117,7 @@ describe('TrackStore', () => {
         createdAt: '',
         updatedAt: '',
         slug: '',
+        fileUrl: '',
       },
     ];
 
@@ -136,6 +141,7 @@ describe('TrackStore', () => {
         createdAt: '',
         updatedAt: '',
         slug: '',
+        fileUrl: '',
       },
     ];
 
@@ -180,6 +186,7 @@ describe('TrackStore', () => {
       createdAt: '',
       updatedAt: '',
       slug: '',
+      fileUrl: '',
     };
 
     const updatedTrack = { ...track, fileUrl: 'uploaded.mp3' };
@@ -235,6 +242,7 @@ describe('TrackStore', () => {
         createdAt: '',
         updatedAt: '',
         slug: '',
+        fileUrl: '',
       },
       {
         id: '2',
@@ -247,6 +255,7 @@ describe('TrackStore', () => {
         createdAt: '',
         updatedAt: '',
         slug: '',
+        fileUrl: '',
       },
     ];
 

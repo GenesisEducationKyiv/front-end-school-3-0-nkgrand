@@ -1,7 +1,7 @@
 import { Button, Checkbox, Popconfirm, Space, Table } from 'antd';
 import { observer } from 'mobx-react-lite';
 import { useMemo } from 'react';
-import type { Track } from '../../types/trackTypes';
+import { type Track } from '../../schemas/track.schema';
 import { CellAudioPlayer } from './__components/CellAudioPlayer';
 import type { ColumnsType } from 'antd/es/table';
 import { useTrackStore } from '../../context/TrackStoreContext';

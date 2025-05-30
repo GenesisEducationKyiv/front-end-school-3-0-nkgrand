@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { Modal, Form, Input, Button, Select, Tag, Space } from 'antd';
-import type { Track } from '../../../types/trackTypes';
+import { type Track } from '../../../schemas/track.schema';
 import { useTrackStore } from '../../../context/TrackStoreContext';
 import type { NotificationInstance } from 'antd/es/notification/interface';
 import { isError } from '../../../utils/isError';
