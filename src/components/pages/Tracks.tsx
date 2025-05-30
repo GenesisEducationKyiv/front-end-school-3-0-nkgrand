@@ -7,6 +7,7 @@ import { debounce } from 'lodash';
 import { Controls } from './__components/Controls';
 import { TracksTable } from './TracksTable';
 import { useTrackStore } from '../../context/TrackStoreContext';
+import { isError } from '../../utils/isError';
 
 const INITIAL_PAGE = 1;
 
@@ -55,11 +56,12 @@ export const Tracks = observer(() => {
           });
         })
         .catch((e: unknown) => {
+          const message = isError(e) ? e.message : 'Unknown error';
           notif.error({
             message: (
               <span data-testid="toast-error">Failed to delete track</span>
             ),
-            description: String(e),
+            description: message,
           });
         });
     },
@@ -76,13 +78,14 @@ export const Tracks = observer(() => {
         });
       })
       .catch((e: unknown) => {
+        const message = isError(e) ? e.message : 'Unknown error';
         notif.error({
           message: (
             <span data-testid="toast-error">
               Failed to delete selected tracks
             </span>
           ),
-          description: String(e),
+          description: message,
         });
       });
   }, [trackStore, selectedRowKeys, notif]);
@@ -98,11 +101,12 @@ export const Tracks = observer(() => {
         });
       })
       .catch((e: unknown) => {
+        const message = isError(e) ? e.message : 'Unknown error';
         notif.error({
           message: (
             <span data-testid="toast-error">Failed to delete all tracks</span>
           ),
-          description: String(e),
+          description: message,
         });
       });
   }, [trackStore, notif]);

@@ -3,6 +3,7 @@ import { Modal, Form, Input, Button, Select, Tag, Space } from 'antd';
 import type { Track } from '../../../types/trackTypes';
 import { useTrackStore } from '../../../context/TrackStoreContext';
 import type { NotificationInstance } from 'antd/es/notification/interface';
+import { isError } from '../../../utils/isError';
 
 interface CreateEditTrackModalProps {
   visible: boolean;
@@ -78,8 +79,7 @@ export const CreateEditTrackModal = ({
       } catch (e: unknown) {
         notificationApi.error({
           message: <span data-testid="toast-error">Save failed</span>,
-          description:
-            e instanceof Error ? e.message : 'Unexpected error occurred',
+          description: isError(e) ? e.message : 'Unexpected error occurred',
         });
       }
     },

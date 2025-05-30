@@ -1,6 +1,7 @@
 import { makeAutoObservable, runInAction } from 'mobx';
 import type { Track } from '../types/trackTypes';
 import * as trackApi from '../api/trackApi';
+import { isError } from '../utils/isError';
 
 export class TrackStore {
   tracks: Track[] = [];
@@ -26,7 +27,11 @@ export class TrackStore {
         this.totalTracks = meta.total;
       });
     } catch (e: unknown) {
-      console.error('Failed to fetch tracks', e);
+      if (isError(e)) {
+        console.error('Failed to fetch tracks:', e.message);
+      } else {
+        console.error('Failed to fetch tracks:', String(e));
+      }
     } finally {
       runInAction(() => {
         this.loading = false;
@@ -41,7 +46,11 @@ export class TrackStore {
         this.genres = response.data as string[];
       });
     } catch (e: unknown) {
-      console.error('Failed to fetch genres', e);
+      if (isError(e)) {
+        console.error('Failed to fetch genres:', e.message);
+      } else {
+        console.error('Failed to fetch genres:', String(e));
+      }
     }
   }
 
@@ -72,7 +81,12 @@ export class TrackStore {
       runInAction(() => {
         this.tracks = prev;
       });
-      throw e;
+
+      if (isError(e)) {
+        throw e;
+      }
+
+      throw new Error(String(e));
     }
   }
 
@@ -93,7 +107,12 @@ export class TrackStore {
       runInAction(() => {
         this.tracks = prev;
       });
-      throw e;
+
+      if (isError(e)) {
+        throw e;
+      }
+
+      throw new Error(String(e));
     }
   }
 
@@ -108,7 +127,12 @@ export class TrackStore {
       runInAction(() => {
         this.tracks = prev;
       });
-      throw e;
+
+      if (isError(e)) {
+        throw e;
+      }
+
+      throw new Error(String(e));
     }
   }
 
@@ -123,7 +147,12 @@ export class TrackStore {
       runInAction(() => {
         this.tracks = prev;
       });
-      throw e;
+
+      if (isError(e)) {
+        throw e;
+      }
+
+      throw new Error(String(e));
     }
   }
 

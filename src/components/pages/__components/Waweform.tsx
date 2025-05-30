@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import WaveSurfer from 'wavesurfer.js';
+import { isNamedError } from '../../../utils/isError';
 
 interface WaveformProps {
   src: string;
@@ -37,12 +38,7 @@ export const Waveform: React.FC<WaveformProps> = React.memo(
         });
 
         wavesurfer.load(src).catch((err: unknown) => {
-          if (
-            typeof err === 'object' &&
-            err !== null &&
-            'name' in err &&
-            (err as { name?: string }).name !== 'AbortError'
-          ) {
+          if (isNamedError(err) && err.name !== 'AbortError') {
             console.error('WaveSurfer load error:', err);
           }
         });
@@ -68,17 +64,12 @@ export const Waveform: React.FC<WaveformProps> = React.memo(
         const playPromise = ws.play();
         if (playPromise instanceof Promise) {
           playPromise.catch((err: unknown) => {
-            if (
-              typeof err === 'object' &&
-              err !== null &&
-              'name' in err &&
-              typeof (err as { name: unknown }).name === 'string'
-            ) {
-              const errorName = (err as { name: string }).name;
+            if (isNamedError(err)) {
+              const { name } = err;
               if (
-                errorName !== 'AbortError' &&
-                errorName !== 'NotAllowedError' &&
-                errorName !== 'NotSupportedError'
+                name !== 'AbortError' &&
+                name !== 'NotAllowedError' &&
+                name !== 'NotSupportedError'
               ) {
                 console.error('WaveSurfer play() error:', err);
               }
