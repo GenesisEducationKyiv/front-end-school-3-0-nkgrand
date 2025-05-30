@@ -1,11 +1,13 @@
 # ADR-001: React Project Architecture with MobX, Ant Design, and Vite
 
 ## Date
+
 2025-05-26
 
 ## Context
 
 This project is an SPA for managing audio tracks. It started from a blank template (`vite + react-ts`) without any predefined architecture. The initial requirements included:
+
 - displaying a list of tracks with search, filtering, and pagination;
 - creating, editing, and deleting tracks;
 - uploading and removing audio files;
@@ -36,7 +38,23 @@ The following decisions were made:
 - **`data-testid` attributes** for e2e test coverage (e.g., Playwright / Cypress in the future).
 - **Lodash** for search debounce and utility functions.
 
+## Considered Alternatives
+
+- Buissness logic:
+  **Redux / Redux Toolkit**
+
+  - ✅ Widely adopted and well-documented.
+  - ⚠️ Introduces boilerplate overhead for simple CRUD flows.
+  - ⚠️ Requires more explicit wiring and less reactive out of the box.
+
+- UI:
+  - **Material-UI (MUI)**
+  - ✅ Modern components and robust theming system.
+  - ⚠️ Requires more time to customize styles, especially tables and forms.
+  - ⚠️ Less productive for building admin-like interfaces quickly.
+
 ## Status
+
 **Accepted**
 
 ## Code Structure
@@ -64,6 +82,7 @@ This structure allows for fast navigation, clearly separates responsibilities, a
 ## Consequences
 
 ### ✅ Positive
+
 - **Fast development startup** thanks to component libraries and simple tooling.
 - **Readable and modular code** — clear separation of concerns and easy decomposition.
 - **Reactive state model** with MobX — automatic UI updates with minimal code.
@@ -71,6 +90,7 @@ This structure allows for fast navigation, clearly separates responsibilities, a
 - **Easy test coverage** via `data-testid` attributes.
 
 ### ⚠️ Potential drawbacks
+
 - **MobX is less common** than Redux — may require onboarding effort for new developers.
 - **Ant Design has a large bundle size** — might need production optimization.
 - **Wavesurfer.js lacks strong typings** — some areas required custom type definitions.
