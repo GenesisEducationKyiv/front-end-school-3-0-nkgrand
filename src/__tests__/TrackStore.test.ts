@@ -1,6 +1,6 @@
 import { TrackStore } from '../stores/TrackStore';
 import * as trackApi from '../api/trackApi';
-import { Track } from '../types/trackTypes';
+import type { Track } from '../types/trackTypes';
 
 jest.mock('../api/trackApi');
 

@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback, useMemo } from 'react';
 import { Space, Col, Typography, notification } from 'antd';
 import { observer } from 'mobx-react-lite';
-import { Track } from '../../types/trackTypes';
+import type { Track } from '../../types/trackTypes';
 import { CreateEditTrackModal } from './__components/CreateEditTrackModal';
 import { debounce } from 'lodash';
 import { Controls } from './__components/Controls';
@@ -49,17 +49,19 @@ export const Tracks = observer(() => {
     (id: string) => {
       trackStore
         .removeTrack(id)
-        .then(() =>
+        .then(() => {
           notif.success({
             message: <span data-testid="toast-success">Track was deleted</span>,
-          })
-        )
-        .catch((e) =>
+          });
+        })
+        .catch((e: unknown) => {
           notif.error({
-            message: <span data-testid="toast-error">Failed to delete track</span>,
+            message: (
+              <span data-testid="toast-error">Failed to delete track</span>
+            ),
             description: String(e),
-          })
-        );
+          });
+        });
     },
     [trackStore, notif]
   );
@@ -73,43 +75,51 @@ export const Tracks = observer(() => {
           message: <span data-testid="toast-success">Tracks were deleted</span>,
         });
       })
-      .catch((e) =>
+      .catch((e: unknown) => {
         notif.error({
-          message: <span data-testid="toast-error">Failed to delete selected tracks</span>,
+          message: (
+            <span data-testid="toast-error">
+              Failed to delete selected tracks
+            </span>
+          ),
           description: String(e),
-        })
-      );
+        });
+      });
   }, [trackStore, selectedRowKeys, notif]);
 
   const handleDeleteAll = useCallback(() => {
     trackStore
       .removeAllTracks()
-      .then(() =>
+      .then(() => {
         notif.success({
-          message: <span data-testid="toast-success">All tracks were deleted</span>,
-        })
-      )
-      .catch((e) =>
+          message: (
+            <span data-testid="toast-success">All tracks were deleted</span>
+          ),
+        });
+      })
+      .catch((e: unknown) => {
         notif.error({
-          message: <span data-testid="toast-error">Failed to delete all tracks</span>,
+          message: (
+            <span data-testid="toast-error">Failed to delete all tracks</span>
+          ),
           description: String(e),
-        })
-      );
+        });
+      });
   }, [trackStore, notif]);
 
   const filteredTracks = useMemo(() => {
     const term = searchTerm.toLowerCase();
     return trackStore.tracks.filter(
       (t) =>
-        t.title?.toLowerCase().includes(term) ||
-        t.artist?.toLowerCase().includes(term) ||
-        t.album?.toLowerCase().includes(term)
+        t.title.toLowerCase().includes(term) ||
+        t.artist.toLowerCase().includes(term) ||
+        t.album.toLowerCase().includes(term)
     );
   }, [searchTerm, trackStore.tracks]);
 
   useEffect(() => {
-    trackStore.fetchTracks(INITIAL_PAGE);
-    trackStore.fetchGenres();
+    void trackStore.fetchTracks(INITIAL_PAGE);
+    void trackStore.fetchGenres();
   }, [trackStore]);
 
   return (

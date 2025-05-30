@@ -6,12 +6,22 @@ import tseslint from 'typescript-eslint'
 
 export default tseslint.config(
   { ignores: ['dist'] },
+
   {
-    extends: [js.configs.recommended, ...tseslint.configs.recommended],
+    extends: [
+      js.configs.recommended,
+      ...tseslint.configs.recommended,
+      ...tseslint.configs.strictTypeChecked,
+      ...tseslint.configs.stylistic,
+    ],
     files: ['**/*.{ts,tsx}'],
     languageOptions: {
       ecmaVersion: 2020,
       globals: globals.browser,
+      parserOptions: {
+        project: ['./tsconfig.app.json'],
+        tsconfigRootDir: import.meta.dirname,
+      },
     },
     plugins: {
       'react-hooks': reactHooks,
@@ -23,6 +33,20 @@ export default tseslint.config(
         'warn',
         { allowConstantExport: true },
       ],
+      '@typescript-eslint/no-explicit-any': 'error',
+      '@typescript-eslint/no-unsafe-assignment': 'warn',
+      '@typescript-eslint/no-unsafe-member-access': 'warn',
+      '@typescript-eslint/consistent-type-imports': 'warn',
+    },
+  },
+
+  {
+    files: ['vite.config.ts'],
+    languageOptions: {
+      parserOptions: {
+        project: ['./tsconfig.node.json'],
+        tsconfigRootDir: import.meta.dirname,
+      },
     },
   },
 )

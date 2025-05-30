@@ -6,6 +6,9 @@
     "lib": ["ES2020", "DOM", "DOM.Iterable"],
     "module": "ESNext",
     "skipLibCheck": true,
+    "noImplicitOverride": true,
+    "exactOptionalPropertyTypes": true,
+    "noPropertyAccessFromIndexSignature": true,
 
     /* Bundler mode */
     "moduleResolution": "bundler",

@@ -1,5 +1,5 @@
 import { makeAutoObservable, runInAction } from 'mobx';
-import { Track } from '../types/trackTypes';
+import type { Track } from '../types/trackTypes';
 import * as trackApi from '../api/trackApi';
 
 export class TrackStore {
@@ -14,17 +14,19 @@ export class TrackStore {
     makeAutoObservable(this);
   }
 
-  async fetchTracks(page = this.page) {
+  async fetchTracks(page = this.page): Promise<void> {
     this.loading = true;
     try {
-      const response = await trackApi.fetchTracks(page, this.limit);
+      const response = (await trackApi.fetchTracks(page, this.limit)) as {
+        data: { data: Track[]; meta: { total: number } };
+      };
       const { data, meta } = response.data;
       runInAction(() => {
         this.tracks = data;
         this.totalTracks = meta.total;
       });
-    } catch {
-      console.error('Failed to fetch tracks');
+    } catch (e: unknown) {
+      console.error('Failed to fetch tracks', e);
     } finally {
       runInAction(() => {
         this.loading = false;
@@ -32,49 +34,30 @@ export class TrackStore {
     }
   }
 
-  async fetchGenres() {
+  async fetchGenres(): Promise<void> {
     try {
       const response = await trackApi.fetchGenres();
       runInAction(() => {
-        this.genres = response.data;
+        this.genres = response.data as string[];
       });
-    } catch {
-      console.error('Failed to fetch genres');
+    } catch (e: unknown) {
+      console.error('Failed to fetch genres', e);
     }
   }
 
-  // TODO: Uncomment and implement this method if needed when we have separate page for track
-  // async fetchTrackBySlug(trackId: string): Promise<Track> {
-  //   runInAction(() => {
-  //     this.loading = true;
-  //   });
-  //   try {
-  //     const { data } = await axios.get<Track>(`/api/tracks/${trackId}`);
-  //     runInAction(() => {
-  //       const idx = this.tracks.findIndex((t) => t.id === trackId);
-  //       if (idx !== -1) this.tracks[idx] = data;
-  //     });
-  //     return data;
-  //   } finally {
-  //     runInAction(() => {
-  //       this.loading = false;
-  //     });
-  //   }
-  // }
-
-  setPage(page: number) {
+  setPage(page: number): void {
     this.page = page;
-    this.fetchTracks(page);
+    void this.fetchTracks(page);
   }
 
-  setLimit(limit: number) {
+  setLimit(limit: number): void {
     this.limit = limit;
-    this.fetchTracks(this.page);
+    void this.fetchTracks(this.page);
   }
 
   async addTrack(track: Track): Promise<Track> {
     const prev = [...this.tracks];
-    const tempId = `temp-${Date.now()}`;
+    const tempId = `temp-${String(Date.now())}`;
     runInAction(() => {
       this.tracks.unshift({ ...track, id: tempId });
     });
@@ -85,7 +68,7 @@ export class TrackStore {
         if (idx !== -1) this.tracks[idx] = data;
       });
       return data;
-    } catch (e) {
+    } catch (e: unknown) {
       runInAction(() => {
         this.tracks = prev;
       });
@@ -106,7 +89,7 @@ export class TrackStore {
         if (idx !== -1) this.tracks[idx] = data;
       });
       return data;
-    } catch (e) {
+    } catch (e: unknown) {
       runInAction(() => {
         this.tracks = prev;
       });
@@ -121,7 +104,7 @@ export class TrackStore {
     });
     try {
       await trackApi.deleteTrack(trackId);
-    } catch (e) {
+    } catch (e: unknown) {
       runInAction(() => {
         this.tracks = prev;
       });
@@ -136,7 +119,7 @@ export class TrackStore {
     });
     try {
       await trackApi.deleteTracks(ids);
-    } catch (e) {
+    } catch (e: unknown) {
       runInAction(() => {
         this.tracks = prev;
       });
@@ -151,7 +134,9 @@ export class TrackStore {
     const limit = 100;
 
     do {
-      const response = await trackApi.fetchTracks(page, limit);
+      const response = (await trackApi.fetchTracks(page, limit)) as {
+        data: { data: Track[]; meta: { total: number } };
+      };
       const { data, meta } = response.data;
       all.push(...data);
       total = meta.total;
@@ -181,7 +166,7 @@ export class TrackStore {
     await trackApi.removeTrackFile(trackId);
     runInAction(() => {
       const idx = this.tracks.findIndex((t) => t.id === trackId);
-      if (idx !== -1) this.tracks[idx].fileUrl = undefined;
+      if (idx !== -1) this.tracks[idx].fileUrl = '';
     });
   }
 }

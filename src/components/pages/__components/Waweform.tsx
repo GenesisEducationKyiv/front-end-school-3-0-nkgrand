@@ -36,8 +36,13 @@ export const Waveform: React.FC<WaveformProps> = React.memo(
           normalize: true,
         });
 
-        wavesurfer.load(src).catch((err) => {
-          if (err.name !== 'AbortError') {
+        wavesurfer.load(src).catch((err: unknown) => {
+          if (
+            typeof err === 'object' &&
+            err !== null &&
+            'name' in err &&
+            (err as { name?: string }).name !== 'AbortError'
+          ) {
             console.error('WaveSurfer load error:', err);
           }
         });
@@ -62,13 +67,23 @@ export const Waveform: React.FC<WaveformProps> = React.memo(
       if (playing && !wasPlaying && !ws.isPlaying()) {
         const playPromise = ws.play();
         if (playPromise instanceof Promise) {
-          playPromise.catch((err) => {
+          playPromise.catch((err: unknown) => {
             if (
-              err.name !== 'AbortError' &&
-              err.name !== 'NotAllowedError' &&
-              err.name !== 'NotSupportedError'
+              typeof err === 'object' &&
+              err !== null &&
+              'name' in err &&
+              typeof (err as { name: unknown }).name === 'string'
             ) {
-              console.error('WaveSurfer play() error:', err);
+              const errorName = (err as { name: string }).name;
+              if (
+                errorName !== 'AbortError' &&
+                errorName !== 'NotAllowedError' &&
+                errorName !== 'NotSupportedError'
+              ) {
+                console.error('WaveSurfer play() error:', err);
+              }
+            } else {
+              console.error('WaveSurfer play() unknown error:', err);
             }
           });
         }
