@@ -4,6 +4,8 @@ import { type Track } from '../../../schemas/track.schema';
 import { TrackPlayer } from './TrackPlayer';
 import useNotification from 'antd/es/notification/useNotification';
 import { useTrackStore } from '../../../context/TrackStoreContext';
+import { Result, ok, err } from 'neverthrow';
+import { isError } from '../../../utils/isError';
 
 interface Props {
   track: Track;
@@ -16,33 +18,47 @@ export const CellAudioPlayer = ({ track, isCurrent, onToggle }: Props) => {
   const [notif, contextHolder] = useNotification();
 
   const handleUpload = async ({ file }: { file: File }) => {
-    try {
-      await trackStore.uploadTrackFile(track.id, file);
-      await trackStore.fetchTracks();
-      notif.success({
-        message: <span data-testid="toast-success">Audio uploaded</span>,
-      });
-    } catch (e) {
-      notif.error({
-        message: <span data-testid="toast-error">Upload failed</span>,
-        description: String(e),
-      });
-    }
+    const result = await trackStore
+      .uploadTrackFile(track.id, file)
+      .then(() => ok(undefined))
+      .catch((e: unknown) => err(isError(e) ? e : new Error(String(e))));
+
+    result.match(
+      async () => {
+        await trackStore.fetchTracks();
+        notif.success({
+          message: <span data-testid="toast-success">Audio uploaded</span>,
+        });
+      },
+      (e) => {
+        notif.error({
+          message: <span data-testid="toast-error">Upload failed</span>,
+          description: e.message,
+        });
+      }
+    );
   };
 
   const handleRemove = async () => {
-    try {
-      await trackStore.removeTrackFile(track.id);
-      await trackStore.fetchTracks();
-      notif.success({
-        message: <span data-testid="toast-success">Audio removed</span>,
-      });
-    } catch (e) {
-      notif.error({
-        message: <span data-testid="toast-error">Removal failed</span>,
-        description: String(e),
-      });
-    }
+    const result: Result<void, Error> = await trackStore
+      .removeTrackFile(track.id)
+      .then(() => ok(undefined))
+      .catch((e: unknown) => err(isError(e) ? e : new Error(String(e))));
+
+    result.match(
+      async () => {
+        await trackStore.fetchTracks();
+        notif.success({
+          message: <span data-testid="toast-success">Audio removed</span>,
+        });
+      },
+      (e) => {
+        notif.error({
+          message: <span data-testid="toast-error">Removal failed</span>,
+          description: e.message,
+        });
+      }
+    );
   };
 
   const hasAudio = Boolean(track.audioFile);

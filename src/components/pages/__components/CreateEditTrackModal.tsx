@@ -3,7 +3,6 @@ import { Modal, Form, Input, Button, Select, Tag, Space } from 'antd';
 import { type Track } from '../../../schemas/track.schema';
 import { useTrackStore } from '../../../context/TrackStoreContext';
 import type { NotificationInstance } from 'antd/es/notification/interface';
-import { isError } from '../../../utils/isError';
 
 interface CreateEditTrackModalProps {
   visible: boolean;
@@ -42,6 +41,50 @@ export const CreateEditTrackModal = ({
     setGenres((prev) => prev.filter((g) => g !== genre));
   }, []);
 
+  // const handleSubmit = useCallback(
+  //   async (values: TrackFormValues) => {
+  //     if (genres.length === 0) {
+  //       notificationApi.error({
+  //         message: <span data-testid="toast-error">Validation failed</span>,
+  //         description: 'Please select at least one genre',
+  //       });
+  //       return;
+  //     }
+
+  //     const payload = {
+  //       ...values,
+  //       genres,
+  //       ...(track ? { id: track.id } : {}),
+  //     };
+
+  //     try {
+  //       if (track) {
+  //         await trackStore.updateTrack(payload as Track);
+  //       } else {
+  //         await trackStore.addTrack(payload as Track);
+  //       }
+
+  //       notificationApi.success({
+  //         message: (
+  //           <span data-testid="toast-success">
+  //             {track ? 'Track updated' : 'Track created'}
+  //           </span>
+  //         ),
+  //       });
+
+  //       await trackStore.fetchTracks();
+  //       onClose();
+  //       form.resetFields();
+  //     } catch (e: unknown) {
+  //       notificationApi.error({
+  //         message: <span data-testid="toast-error">Save failed</span>,
+  //         description: isError(e) ? e.message : 'Unexpected error occurred',
+  //       });
+  //     }
+  //   },
+  //   [track, genres, trackStore, onClose, form, notificationApi]
+  // );
+
   const handleSubmit = useCallback(
     async (values: TrackFormValues) => {
       if (genres.length === 0) {
@@ -58,33 +101,35 @@ export const CreateEditTrackModal = ({
         ...(track ? { id: track.id } : {}),
       };
 
-      try {
-        if (track) {
-          await trackStore.updateTrack(payload as Track);
-        } else {
-          await trackStore.addTrack(payload as Track);
+      const result = track
+        ? await trackStore.updateTrack(payload as Track)
+        : await trackStore.addTrack(payload as Track);
+
+      result.match(
+        async () => {
+          notificationApi.success({
+            message: (
+              <span data-testid="toast-success">
+                {track ? 'Track updated' : 'Track created'}
+              </span>
+            ),
+          });
+
+          await trackStore.fetchTracks();
+          onClose();
+          form.resetFields();
+        },
+        (e) => {
+          notificationApi.error({
+            message: <span data-testid="toast-error">Save failed</span>,
+            description: e.message,
+          });
         }
-
-        notificationApi.success({
-          message: (
-            <span data-testid="toast-success">
-              {track ? 'Track updated' : 'Track created'}
-            </span>
-          ),
-        });
-
-        await trackStore.fetchTracks();
-        onClose();
-        form.resetFields();
-      } catch (e: unknown) {
-        notificationApi.error({
-          message: <span data-testid="toast-error">Save failed</span>,
-          description: isError(e) ? e.message : 'Unexpected error occurred',
-        });
-      }
+      );
     },
     [track, genres, trackStore, onClose, form, notificationApi]
   );
+
 
   useEffect(() => {
     if (visible) {
