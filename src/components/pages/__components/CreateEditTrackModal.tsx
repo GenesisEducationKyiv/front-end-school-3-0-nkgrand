@@ -226,7 +226,16 @@ export const CreateEditTrackModal = ({
                 </span>
               ),
             },
-            { type: 'url', message: 'Please enter a valid URL!' },
+            {
+              validator(_, value) {
+                if (!/^https?:\/\/.+/.test(value)) {
+                  return Promise.reject(
+                    'URL must start with http:// or https://'
+                  );
+                }
+                return Promise.resolve();
+              },
+            },
           ]}
           validateStatus={
             form.getFieldError('coverImage').length ? 'error' : ''
