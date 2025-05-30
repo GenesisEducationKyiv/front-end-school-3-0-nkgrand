@@ -4,7 +4,7 @@ import { type Track } from '../../../schemas/track.schema';
 import { TrackPlayer } from './TrackPlayer';
 import useNotification from 'antd/es/notification/useNotification';
 import { useTrackStore } from '../../../context/TrackStoreContext';
-import { Result, ok, err } from 'neverthrow';
+import { type Result, ok, err } from 'neverthrow';
 import { isError } from '../../../utils/isError';
 
 interface Props {
@@ -23,7 +23,7 @@ export const CellAudioPlayer = ({ track, isCurrent, onToggle }: Props) => {
       .then(() => ok(undefined))
       .catch((e: unknown) => err(isError(e) ? e : new Error(String(e))));
 
-    result.match(
+    await result.match(
       async () => {
         await trackStore.fetchTracks();
         notif.success({
@@ -45,7 +45,7 @@ export const CellAudioPlayer = ({ track, isCurrent, onToggle }: Props) => {
       .then(() => ok(undefined))
       .catch((e: unknown) => err(isError(e) ? e : new Error(String(e))));
 
-    result.match(
+    await result.match(
       async () => {
         await trackStore.fetchTracks();
         notif.success({
@@ -74,7 +74,7 @@ export const CellAudioPlayer = ({ track, isCurrent, onToggle }: Props) => {
         >
           <TrackPlayer
             id={track.id}
-            fileUrl={`/api/files/${track.audioFile}`}
+            fileUrl={`/api/files/${track.audioFile ?? ''}`}
             isPlaying={isCurrent}
             onToggle={onToggle}
           />

@@ -105,7 +105,7 @@ export const CreateEditTrackModal = ({
         ? await trackStore.updateTrack(payload as Track)
         : await trackStore.addTrack(payload as Track);
 
-      result.match(
+      await result.match(
         async () => {
           notificationApi.success({
             message: (
@@ -272,11 +272,9 @@ export const CreateEditTrackModal = ({
               ),
             },
             {
-              validator(_, value) {
+              validator(_, value: string) {
                 if (!/^https?:\/\/.+/.test(value)) {
-                  return Promise.reject(
-                    'URL must start with http:// or https://'
-                  );
+                  return Promise.reject(new Error('URL must start with http:// or https://'));
                 }
                 return Promise.resolve();
               },

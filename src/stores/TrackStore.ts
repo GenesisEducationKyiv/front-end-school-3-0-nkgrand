@@ -7,7 +7,7 @@ import {
 import * as trackApi from '../api/trackApi';
 import { isError } from '../utils/isError';
 import { z } from 'zod';
-import { Result, ok, err } from 'neverthrow';
+import { type Result, ok, err } from 'neverthrow';
 
 export class TrackStore {
   tracks: Track[] = [];
@@ -133,7 +133,7 @@ export class TrackStore {
 
   async addTrack(track: Track): Promise<Result<Track, Error>> {
     const prev = [...this.tracks];
-    const tempId = `temp-${Date.now()}`;
+    const tempId = `temp-${String(Date.now())}`;
 
     runInAction(() => {
       this.tracks.unshift({ ...track, id: tempId });
@@ -142,7 +142,7 @@ export class TrackStore {
     const result = await trackApi
       .addTrack(track)
       .then((res) => ok(res.data))
-      .catch((e) => err(isError(e) ? e : new Error(String(e))));
+      .catch((e: unknown) => err(isError(e) ? e : new Error(String(e))));
 
     return result.match<Result<Track, Error>>(
       (raw) => {
@@ -155,17 +155,17 @@ export class TrackStore {
 
         const data = parsed.data;
 
-      runInAction(() => {
-        const idx = this.tracks.findIndex((t) => t.id === tempId);
-        if (idx !== -1) this.tracks[idx] = data;
-      });
+        runInAction(() => {
+          const idx = this.tracks.findIndex((t) => t.id === tempId);
+          if (idx !== -1) this.tracks[idx] = data;
+        });
 
         return ok(data);
       },
       (e) => {
         runInAction(() => (this.tracks = prev));
         return err(e);
-    }
+      }
     );
   }
 
@@ -226,7 +226,7 @@ export class TrackStore {
     const result = await trackApi
       .updateTrack(updated)
       .then((res) => ok(res.data))
-      .catch((e) => err(isError(e) ? e : new Error(String(e))));
+      .catch((e: unknown) => err(isError(e) ? e : new Error(String(e))));
 
     return result.match<Result<Track, Error>>(
       (raw) => {
@@ -239,18 +239,18 @@ export class TrackStore {
 
         const data = parsed.data;
 
-      runInAction(() => {
-        const idx = this.tracks.findIndex((t) => t.id === data.id);
-        if (idx !== -1) this.tracks[idx] = data;
-      });
+        runInAction(() => {
+          const idx = this.tracks.findIndex((t) => t.id === data.id);
+          if (idx !== -1) this.tracks[idx] = data;
+        });
 
-      return ok(data);
-    },
-    (e) => {
-      runInAction(() => (this.tracks = prev));
-      return err(e);
-    }
-  );
+        return ok(data);
+      },
+      (e) => {
+        runInAction(() => (this.tracks = prev));
+        return err(e);
+      }
+    );
   }
 
 
@@ -267,7 +267,7 @@ export class TrackStore {
       .catch((e: unknown) => err(isError(e) ? e : new Error(String(e))));
 
     result.match(
-      () => { },
+      () => { console.log('Track successfully removed'); },
       (e) => {
         runInAction(() => {
           this.tracks = prev;
@@ -290,7 +290,7 @@ export class TrackStore {
       .catch((e: unknown) => err(isError(e) ? e : new Error(String(e))));
 
     result.match(
-      () => { },
+      () => { console.log('Tracks successfully removed'); },
       (e) => {
         runInAction(() => {
           this.tracks = prev;
