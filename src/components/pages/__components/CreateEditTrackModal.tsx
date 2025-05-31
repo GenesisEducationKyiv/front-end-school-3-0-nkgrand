@@ -41,50 +41,6 @@ export const CreateEditTrackModal = ({
     setGenres((prev) => prev.filter((g) => g !== genre));
   }, []);
 
-  // const handleSubmit = useCallback(
-  //   async (values: TrackFormValues) => {
-  //     if (genres.length === 0) {
-  //       notificationApi.error({
-  //         message: <span data-testid="toast-error">Validation failed</span>,
-  //         description: 'Please select at least one genre',
-  //       });
-  //       return;
-  //     }
-
-  //     const payload = {
-  //       ...values,
-  //       genres,
-  //       ...(track ? { id: track.id } : {}),
-  //     };
-
-  //     try {
-  //       if (track) {
-  //         await trackStore.updateTrack(payload as Track);
-  //       } else {
-  //         await trackStore.addTrack(payload as Track);
-  //       }
-
-  //       notificationApi.success({
-  //         message: (
-  //           <span data-testid="toast-success">
-  //             {track ? 'Track updated' : 'Track created'}
-  //           </span>
-  //         ),
-  //       });
-
-  //       await trackStore.fetchTracks();
-  //       onClose();
-  //       form.resetFields();
-  //     } catch (e: unknown) {
-  //       notificationApi.error({
-  //         message: <span data-testid="toast-error">Save failed</span>,
-  //         description: isError(e) ? e.message : 'Unexpected error occurred',
-  //       });
-  //     }
-  //   },
-  //   [track, genres, trackStore, onClose, form, notificationApi]
-  // );
-
   const handleSubmit = useCallback(
     async (values: TrackFormValues) => {
       if (genres.length === 0) {
