@@ -117,7 +117,7 @@ export const Tracks = observer(() => {
       (t) =>
         t.title.toLowerCase().includes(term) ||
         t.artist.toLowerCase().includes(term) ||
-        t.album.toLowerCase().includes(term)
+        t.album?.toLowerCase().includes(term)
     );
   }, [searchTerm, trackStore.tracks]);
 
