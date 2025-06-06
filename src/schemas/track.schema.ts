@@ -4,7 +4,7 @@ export const trackSchema = z.object({
   id: z.string(),
   title: z.string(),
   artist: z.string(),
-  album: z.string(),
+  album: z.string().optional(),
   genres: z.array(z.string()),
   slug: z.string(),
   coverImage: z.string().url(),
