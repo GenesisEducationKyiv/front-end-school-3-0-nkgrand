@@ -12,6 +12,7 @@
     "test": "jest"
   },
   "dependencies": {
+    "@mobily/ts-belt": "^3.13.1",
     "antd": "^5.24.7",
     "axios": "^1.8.4",
     "lodash": "^4.17.21",

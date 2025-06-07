@@ -5,6 +5,7 @@ import { QuestionCircleOutlined } from '@ant-design/icons';
 
 interface ControlsProps {
   handleSearchChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  searchValue: string;
   showModal: () => void;
   handleBulkDelete: () => void;
   handleDeleteAll: () => void;
@@ -14,6 +15,7 @@ interface ControlsProps {
 export const Controls = observer(
   ({
     handleSearchChange,
+    searchValue,
     showModal,
     handleBulkDelete,
     handleDeleteAll,
@@ -27,6 +29,7 @@ export const Controls = observer(
           placeholder="Search tracks"
           data-testid="search-input"
           onChange={handleSearchChange}
+          value={searchValue}
           style={{ width: 300 }}
           allowClear
         />
