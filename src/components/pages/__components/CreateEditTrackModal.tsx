@@ -1,17 +1,17 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { Modal, Form, Input, Button, Select, Tag, Space } from 'antd';
-import { Track } from '../../../types/trackTypes';
+import { type Track } from '../../../schemas/track.schema';
 import { useTrackStore } from '../../../context/TrackStoreContext';
-import { NotificationInstance } from 'antd/es/notification/interface';
+import type { NotificationInstance } from 'antd/es/notification/interface';
 
-type CreateEditTrackModalProps = {
+interface CreateEditTrackModalProps {
   visible: boolean;
   onClose: () => void;
   track?: Track | null;
   notificationApi: NotificationInstance;
-};
+}
 
-type TrackFormValues = {
+interface TrackFormValues {
   title: string;
   artist: string;
   album: string;
@@ -42,7 +42,7 @@ export const CreateEditTrackModal = ({
   }, []);
 
   const handleSubmit = useCallback(
-    (values: TrackFormValues) => {
+    async (values: TrackFormValues) => {
       if (genres.length === 0) {
         notificationApi.error({
           message: <span data-testid="toast-error">Validation failed</span>,
@@ -57,31 +57,35 @@ export const CreateEditTrackModal = ({
         ...(track ? { id: track.id } : {}),
       };
 
-      const op = track
-        ? trackStore.updateTrack(payload as Track)
-        : trackStore.addTrack(payload as Track);
+      const result = track
+        ? await trackStore.updateTrack(payload as Track)
+        : await trackStore.addTrack(payload as Track);
 
-      op.then(() => {
-        notificationApi.success({
-          message: (
-            <span data-testid="toast-success">
-              {track ? 'Track updated' : 'Track created'}
-            </span>
-          ),
-        });
-        trackStore.fetchTracks().then(() => {
+      await result.match(
+        async () => {
+          notificationApi.success({
+            message: (
+              <span data-testid="toast-success">
+                {track ? 'Track updated' : 'Track created'}
+              </span>
+            ),
+          });
+
+          await trackStore.fetchTracks();
           onClose();
           form.resetFields();
-        });
-      }).catch((e) => {
-        notificationApi.error({
-          message: <span data-testid="toast-error">Save failed</span>,
-          description: `${e}`,
-        });
-      });
+        },
+        (e) => {
+          notificationApi.error({
+            message: <span data-testid="toast-error">Save failed</span>,
+            description: e.message,
+          });
+        }
+      );
     },
     [track, genres, trackStore, onClose, form, notificationApi]
   );
+
 
   useEffect(() => {
     if (visible) {
@@ -92,7 +96,7 @@ export const CreateEditTrackModal = ({
           album: track.album || '',
           coverImage: track.coverImage || '',
         });
-        setGenres(track.genres || []);
+        setGenres(track.genres);
       } else {
         form.resetFields();
         setGenres([]);
@@ -112,7 +116,9 @@ export const CreateEditTrackModal = ({
     >
       <Form
         form={form}
-        onFinish={handleSubmit}
+        onFinish={(values) => {
+          void handleSubmit(values as TrackFormValues);
+        }}
         layout="vertical"
         data-testid="track-form"
       >
@@ -186,7 +192,13 @@ export const CreateEditTrackModal = ({
             {genres.length > 0 && (
               <div>
                 {genres.map((g) => (
-                  <Tag key={g} closable onClose={() => handleRemoveGenre(g)}>
+                  <Tag
+                    key={g}
+                    closable
+                    onClose={() => {
+                      handleRemoveGenre(g);
+                    }}
+                  >
                     {g}
                   </Tag>
                 ))}
@@ -215,7 +227,14 @@ export const CreateEditTrackModal = ({
                 </span>
               ),
             },
-            { type: 'url', message: 'Please enter a valid URL!' },
+            {
+              validator(_, value: string) {
+                if (!/^https?:\/\/.+/.test(value)) {
+                  return Promise.reject(new Error('URL must start with http:// or https://'));
+                }
+                return Promise.resolve();
+              },
+            },
           ]}
           validateStatus={
             form.getFieldError('coverImage').length ? 'error' : ''

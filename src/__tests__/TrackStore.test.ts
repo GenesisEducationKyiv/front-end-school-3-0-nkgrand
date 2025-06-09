@@ -1,6 +1,6 @@
 import { TrackStore } from '../stores/TrackStore';
 import * as trackApi from '../api/trackApi';
-import { Track } from '../types/trackTypes';
+import { type Track } from '../schemas/track.schema';
 
 jest.mock('../api/trackApi');
 
@@ -27,13 +27,13 @@ describe('TrackStore', () => {
       createdAt: '',
       updatedAt: '',
       slug: '',
+      fileUrl: '',
     };
 
     const realTrack: Track = { ...newTrack, id: 'real-track-id' };
 
     (trackApi.addTrack as jest.Mock).mockResolvedValue({ data: realTrack });
-
-    const result = await store.addTrack(newTrack as Track);
+    const result = (await store.addTrack(newTrack as Track))._unsafeUnwrap();
 
     expect(result.id).toBe('real-track-id');
     expect(store.tracks[0].id).toBe('real-track-id');
@@ -51,6 +51,7 @@ describe('TrackStore', () => {
       createdAt: '',
       updatedAt: '',
       slug: '',
+      fileUrl: '',
     };
 
     store.tracks = [track];
@@ -60,7 +61,7 @@ describe('TrackStore', () => {
       data: updatedTrack,
     });
 
-    const result = await store.updateTrack(updatedTrack);
+    const result = (await store.updateTrack(updatedTrack))._unsafeUnwrap();
 
     expect(result.title).toBe('Updated');
     expect(store.tracks[0].title).toBe('Updated');
@@ -79,6 +80,7 @@ describe('TrackStore', () => {
         createdAt: '',
         updatedAt: '',
         slug: '',
+        fileUrl: '',
       },
     ];
     (trackApi.deleteTrack as jest.Mock).mockResolvedValue({});
@@ -101,6 +103,7 @@ describe('TrackStore', () => {
         createdAt: '',
         updatedAt: '',
         slug: '',
+        fileUrl: '',
       },
       {
         id: 't2',
@@ -113,6 +116,7 @@ describe('TrackStore', () => {
         createdAt: '',
         updatedAt: '',
         slug: '',
+        fileUrl: '',
       },
     ];
 
@@ -136,6 +140,7 @@ describe('TrackStore', () => {
         createdAt: '',
         updatedAt: '',
         slug: '',
+        fileUrl: '',
       },
     ];
 
@@ -180,6 +185,7 @@ describe('TrackStore', () => {
       createdAt: '',
       updatedAt: '',
       slug: '',
+      fileUrl: '',
     };
 
     const updatedTrack = { ...track, fileUrl: 'uploaded.mp3' };
@@ -235,6 +241,7 @@ describe('TrackStore', () => {
         createdAt: '',
         updatedAt: '',
         slug: '',
+        fileUrl: '',
       },
       {
         id: '2',
@@ -247,6 +254,7 @@ describe('TrackStore', () => {
         createdAt: '',
         updatedAt: '',
         slug: '',
+        fileUrl: '',
       },
     ];
 

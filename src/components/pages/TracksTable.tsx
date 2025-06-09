@@ -1,9 +1,9 @@
 import { Button, Checkbox, Popconfirm, Space, Table } from 'antd';
 import { observer } from 'mobx-react-lite';
 import { useMemo } from 'react';
-import { Track } from '../../types/trackTypes';
+import { type Track } from '../../schemas/track.schema';
 import { CellAudioPlayer } from './__components/CellAudioPlayer';
-import { ColumnsType } from 'antd/es/table';
+import type { ColumnsType } from 'antd/es/table';
 import { useTrackStore } from '../../context/TrackStoreContext';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 
@@ -33,14 +33,14 @@ export const TracksTable = observer((props: TracksTableProps) => {
   } = props;
   const trackStore = useTrackStore();
   const columns: ColumnsType<Track> = useMemo(() => {
-    const genreFilters = trackStore.genres.map((g) => ({
+    const genreFilters = trackStore.genres.map((g: string) => ({
       text: g,
       value: g,
     }));
 
     const artistFilters = Array.from(
-      new Set(trackStore.tracks.map((t) => t.artist))
-    ).map((name) => ({ text: name, value: name }));
+      new Set(trackStore.tracks.map((t: Track) => t.artist))
+    ).map((name: string) => ({ text: name, value: name }));
 
     return [
       {
@@ -48,22 +48,24 @@ export const TracksTable = observer((props: TracksTableProps) => {
         dataIndex: 'coverImage',
         key: 'coverImage',
         width: 70,
-        render: (url) => (
-          <img
-            src={url || DEFAULT_COVER_IMG}
-            alt="Cover"
-            style={{
-              width: 50,
-              height: 50,
-              objectFit: 'cover',
-              borderRadius: 4,
-            }}
-            onError={(e) => {
-              e.currentTarget.onerror = null;
-              e.currentTarget.src = DEFAULT_COVER_IMG;
-            }}
-          />
-        ),
+        render: (url: string) => {
+          return (
+            <img
+              src={url || DEFAULT_COVER_IMG}
+              alt="Cover"
+              style={{
+                width: 50,
+                height: 50,
+                objectFit: 'cover',
+                borderRadius: 4,
+              }}
+              onError={(e) => {
+                e.currentTarget.onerror = null;
+                e.currentTarget.src = DEFAULT_COVER_IMG;
+              }}
+            />
+          );
+        },
       },
       {
         title: 'Title',
@@ -92,7 +94,7 @@ export const TracksTable = observer((props: TracksTableProps) => {
         dataIndex: 'album',
         key: 'album',
         width: 200,
-        sorter: (a, b) => (a.album || '').localeCompare(b.album),
+        sorter: (a, b) => (a.album || '').localeCompare(b.album || ''),
       },
       {
         title: <span data-testid="filter-genre">Genres</span>,
@@ -111,7 +113,9 @@ export const TracksTable = observer((props: TracksTableProps) => {
           <CellAudioPlayer
             track={record}
             isCurrent={playingId === record.id}
-            onToggle={() => onTogglePlay(record.id)}
+            onToggle={() => {
+              onTogglePlay(record.id);
+            }}
           />
         ),
       },
@@ -122,7 +126,9 @@ export const TracksTable = observer((props: TracksTableProps) => {
           <Space direction="vertical" size="small">
             <Button
               type="link"
-              onClick={() => onEdit(record)}
+              onClick={() => {
+                onEdit(record);
+              }}
               data-testid={`edit-track-${record.id}`}
             >
               Edit
@@ -133,7 +139,9 @@ export const TracksTable = observer((props: TracksTableProps) => {
                   Are you sure to delete this track?
                 </span>
               }
-              onConfirm={() => onDelete(record.id)}
+              onConfirm={() => {
+                onDelete(record.id);
+              }}
               okButtonProps={{ danger: true }}
               okText="Delete"
               icon={<QuestionCircleOutlined style={{ color: 'red' }} />}
@@ -173,9 +181,13 @@ export const TracksTable = observer((props: TracksTableProps) => {
         pagination={{
           current: trackStore.page,
           total: trackStore.totalTracks,
-          onChange: (page) => trackStore.setPage(page),
+          onChange: (page) => {
+            trackStore.setPage(page);
+          },
           showSizeChanger: true,
-          onShowSizeChange: (_, size) => trackStore.setLimit(size),
+          onShowSizeChange: (_, size) => {
+            trackStore.setLimit(size);
+          },
           pageSizeOptions: ['5', '10', '20', '30'],
           position: ['bottomCenter'],
           defaultPageSize: 10,
@@ -222,10 +234,14 @@ export const TracksTable = observer((props: TracksTableProps) => {
         }}
         components={{
           body: {
-            row: (props) => (
+            row: (
+              props: React.HTMLAttributes<HTMLTableRowElement> & {
+                'data-row-key'?: React.Key;
+              }
+            ) => (
               <tr
                 {...props}
-                data-testid={`track-item-${props['data-row-key']}`}
+                data-testid={`track-item-${String(props['data-row-key'])}`}
               />
             ),
           },

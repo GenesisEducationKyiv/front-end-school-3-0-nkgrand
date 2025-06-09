@@ -3,13 +3,13 @@ import { useTrackStore } from '../../../context/TrackStoreContext';
 import { observer } from 'mobx-react-lite';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 
-type ControlsProps = {
+interface ControlsProps {
   handleSearchChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   showModal: () => void;
   handleBulkDelete: () => void;
   handleDeleteAll: () => void;
   selectedRowKeys: string[];
-};
+}
 
 export const Controls = observer(
   ({
@@ -33,7 +33,9 @@ export const Controls = observer(
         <Button
           data-testid="create-track-button"
           type="primary"
-          onClick={() => showModal()}
+          onClick={() => {
+            showModal();
+          }}
         >
           Create Track
         </Button>
@@ -63,7 +65,9 @@ export const Controls = observer(
               Are you sure to delete all tracks?
             </span>
           }
-          onConfirm={handleDeleteAll}
+          onConfirm={() => {
+            handleDeleteAll();
+          }}
           okButtonProps={{ danger: true }}
           okText="Delete"
           icon={<QuestionCircleOutlined style={{ color: 'red' }} />}

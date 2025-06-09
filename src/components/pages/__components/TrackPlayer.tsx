@@ -3,7 +3,7 @@ import { Button } from 'antd';
 import { Waveform } from './Waweform';
 import { PauseCircleOutlined, PlayCircleOutlined } from '@ant-design/icons';
 
-type TrackPlayerProps = {
+interface TrackPlayerProps {
   id: string;
   fileUrl: string;
   isPlaying: boolean;

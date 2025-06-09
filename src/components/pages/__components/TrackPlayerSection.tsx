@@ -1,7 +1,7 @@
 import { Button, Popconfirm, Space } from "antd";
 import { TrackPlayer } from "./TrackPlayer";
 
-type AudioPlayerSectionProps = {
+interface AudioPlayerSectionProps {
   fileUrl: string;
   isPlaying: boolean;
   onTogglePlay: () => void;
