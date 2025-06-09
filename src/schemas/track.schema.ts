@@ -7,7 +7,7 @@ export const trackSchema = z.object({
   album: z.string().optional(),
   genres: z.array(z.string()),
   slug: z.string(),
-  coverImage: z.string().url(),
+  coverImage: z.string().url().optional(),
   createdAt: z.string(),
   updatedAt: z.string(),
   audioFile: z.string().optional(),
