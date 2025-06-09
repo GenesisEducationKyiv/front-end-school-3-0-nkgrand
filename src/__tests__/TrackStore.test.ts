@@ -33,8 +33,7 @@ describe('TrackStore', () => {
     const realTrack: Track = { ...newTrack, id: 'real-track-id' };
 
     (trackApi.addTrack as jest.Mock).mockResolvedValue({ data: realTrack });
-
-    const result = await store.addTrack(newTrack as Track);
+    const result = (await store.addTrack(newTrack as Track))._unsafeUnwrap();
 
     expect(result.id).toBe('real-track-id');
     expect(store.tracks[0].id).toBe('real-track-id');
@@ -62,7 +61,7 @@ describe('TrackStore', () => {
       data: updatedTrack,
     });
 
-    const result = await store.updateTrack(updatedTrack);
+    const result = (await store.updateTrack(updatedTrack))._unsafeUnwrap();
 
     expect(result.title).toBe('Updated');
     expect(store.tracks[0].title).toBe('Updated');
