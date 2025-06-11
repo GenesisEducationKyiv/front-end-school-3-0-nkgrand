@@ -94,7 +94,7 @@ export const TracksTable = observer((props: TracksTableProps) => {
         dataIndex: 'album',
         key: 'album',
         width: 200,
-        sorter: (a, b) => (a.album || '').localeCompare(b.album),
+        sorter: (a, b) => (a.album || '').localeCompare(b.album || ''),
       },
       {
         title: <span data-testid="filter-genre">Genres</span>,
