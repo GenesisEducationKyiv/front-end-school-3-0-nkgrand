@@ -1,10 +1,11 @@
 import { useEffect, useState, useCallback, useMemo } from 'react';
 import { Space, Col, Typography, notification } from 'antd';
 import { observer } from 'mobx-react-lite';
+import { useSearchParams } from 'react-router-dom';
 import { type Track } from '../../schemas/track.schema';
 import { CreateEditTrackModal } from './__components/CreateEditTrackModal';
-import { debounce } from 'lodash';
 import { Controls } from './__components/Controls';
+import { O, pipe } from '@mobily/ts-belt';
 import { TracksTable } from './TracksTable';
 import { useTrackStore } from '../../context/TrackStoreContext';
 import { isError } from '../../utils/isError';
@@ -15,48 +16,111 @@ const { Title } = Typography;
 
 export const Tracks = observer(() => {
   const trackStore = useTrackStore();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [currentTrack, setCurrentTrack] = useState<Track | null>(null);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [fetchError, setFetchError] = useState<string | null>(null);
+
+  const initialSearchValue = O.getWithDefault(
+    O.fromNullable(searchParams.get('search')),
+    ''
+  );
+
+  const [inputValue, setInputValue] = useState<string>(initialSearchValue);
+  const [debouncedValue, setDebouncedValue] = useState(inputValue);
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
   const [notif, contextHolder] = notification.useNotification();
   const [playingId, setPlayingId] = useState<string | null>(null);
 
-  const togglePlay = useCallback((id: string) => {
-    setPlayingId((prev) => (prev === id ? null : id));
-  }, []);
+  const fetchTracks = useCallback(
+    async (page: number) => {
+      try {
+        await trackStore.fetchTracks(page);
+        return true;
+      } catch (error) {
+        const errorMessage = isError(error) ? error.message : 'Unknown error';
+        setFetchError(errorMessage);
+        notif.error({
+          message: 'Failed to load tracks',
+          description: errorMessage,
+        });
+        return false;
+      }
+    },
+    [trackStore, notif]
+  );
 
-  const debouncedSetSearchTerm = useMemo(
-    () => debounce(setSearchTerm, 500),
+  const fetchGenres = useCallback(async () => {
+    try {
+      await trackStore.fetchGenres();
+      return true;
+    } catch (error) {
+      const errorMessage = isError(error) ? error.message : 'Unknown error';
+      setFetchError(errorMessage);
+      notif.error({
+        message: 'Failed to load genres',
+        description: errorMessage,
+      });
+      return false;
+    }
+  }, [trackStore, notif]);
+
+  useEffect(() => {
+    pipe(
+      O.fromNullable(debouncedValue),
+      O.filter((value) => value.trim().length > 0),
+      O.match(
+        (value: string) => {
+          setSearchParams({ search: value.trim() }, { replace: true });
+        },
+        () => {
+          setSearchParams({}, { replace: true });
+        }
+      )
+    );
+  }, [debouncedValue, setSearchParams]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedValue(inputValue);
+    }, 500);
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [inputValue]);
+
+  useEffect(() => {
+    const loadData = async () => {
+      const tracksSuccess = await fetchTracks(INITIAL_PAGE);
+      const genresSuccess = await fetchGenres();
+
+      if (tracksSuccess && genresSuccess) {
+        setFetchError(null);
+      }
+    };
+
+    loadData().catch(console.error);
+  }, [fetchTracks, fetchGenres]);
+
+  const handleSearchChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setInputValue(e.target.value);
+    },
     []
   );
 
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    debouncedSetSearchTerm(e.target.value);
-  };
-
-  const showModal = (track?: Track) => {
-    setPlayingId(null);
-    setCurrentTrack(track ?? null);
-    setIsModalVisible(true);
-  };
-
-  const handleClose = useCallback(() => {
-    setIsModalVisible(false);
-    setCurrentTrack(null);
-  }, []);
-
   const handleDelete = useCallback(
     (id: string) => {
-      trackStore
+      void trackStore
         .removeTrack(id)
         .then(() => {
           notif.success({
             message: <span data-testid="toast-success">Track was deleted</span>,
           });
         })
-        .catch((e: unknown) => {
-          const message = isError(e) ? e.message : 'Unknown error';
+        .catch((error: unknown) => {
+          const message = isError(error) ? error.message : 'Unknown error';
           notif.error({
             message: (
               <span data-testid="toast-error">Failed to delete track</span>
@@ -69,7 +133,7 @@ export const Tracks = observer(() => {
   );
 
   const handleBulkDelete = useCallback(() => {
-    trackStore
+    void trackStore
       .removeTracks(selectedRowKeys as string[])
       .then(() => {
         setSelectedRowKeys([]);
@@ -77,8 +141,8 @@ export const Tracks = observer(() => {
           message: <span data-testid="toast-success">Tracks were deleted</span>,
         });
       })
-      .catch((e: unknown) => {
-        const message = isError(e) ? e.message : 'Unknown error';
+      .catch((error: unknown) => {
+        const message = isError(error) ? error.message : 'Unknown error';
         notif.error({
           message: (
             <span data-testid="toast-error">
@@ -91,7 +155,7 @@ export const Tracks = observer(() => {
   }, [trackStore, selectedRowKeys, notif]);
 
   const handleDeleteAll = useCallback(() => {
-    trackStore
+    void trackStore
       .removeAllTracks()
       .then(() => {
         notif.success({
@@ -100,8 +164,8 @@ export const Tracks = observer(() => {
           ),
         });
       })
-      .catch((e: unknown) => {
-        const message = isError(e) ? e.message : 'Unknown error';
+      .catch((error: unknown) => {
+        const message = isError(error) ? error.message : 'Unknown error';
         notif.error({
           message: (
             <span data-testid="toast-error">Failed to delete all tracks</span>
@@ -112,19 +176,48 @@ export const Tracks = observer(() => {
   }, [trackStore, notif]);
 
   const filteredTracks = useMemo(() => {
-    const term = searchTerm.toLowerCase();
-    return trackStore.tracks.filter(
-      (t) =>
-        t.title.toLowerCase().includes(term) ||
-        t.artist.toLowerCase().includes(term) ||
-        t.album?.toLowerCase().includes(term)
+    return pipe(
+      debouncedValue,
+      O.fromNullable,
+      O.filter((value) => value.trim().length > 0),
+      O.map((term: string) => term.toLowerCase()),
+      O.map((term: string) =>
+        trackStore.tracks.filter(
+          (t) =>
+            t.title.toLowerCase().includes(term) ||
+            t.artist.toLowerCase().includes(term) ||
+            (t.album?.toLowerCase() || '').includes(term)
+        )
+      ),
+      O.getWithDefault(trackStore.tracks)
     );
-  }, [searchTerm, trackStore.tracks]);
+  }, [debouncedValue, trackStore.tracks]);
 
-  useEffect(() => {
-    void trackStore.fetchTracks(INITIAL_PAGE);
-    void trackStore.fetchGenres();
-  }, [trackStore]);
+  const togglePlay = useCallback((id: string) => {
+    setPlayingId((prev) => (prev === id ? null : id));
+  }, []);
+
+  const showModal = (track?: Track) => {
+    setPlayingId(null);
+    setCurrentTrack(track ?? null);
+    setIsModalVisible(true);
+  };
+
+  const handleClose = useCallback(() => {
+    setIsModalVisible(false);
+    setCurrentTrack(null);
+  }, []);
+
+  if (fetchError) {
+    return (
+      <div>
+        <Title level={2} style={{ color: 'red' }}>
+          Error loading data
+        </Title>
+        <p>{fetchError}</p>
+      </div>
+    );
+  }
 
   return (
     <>
@@ -142,6 +235,7 @@ export const Tracks = observer(() => {
         <Space direction="vertical" size="large" style={{ width: '100%' }}>
           <Controls
             handleSearchChange={handleSearchChange}
+            searchValue={inputValue}
             showModal={showModal}
             handleBulkDelete={handleBulkDelete}
             handleDeleteAll={handleDeleteAll}
