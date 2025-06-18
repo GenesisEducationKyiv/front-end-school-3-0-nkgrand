@@ -26,6 +26,11 @@ export const Tracks = observer(() => {
     ''
   );
 
+  const initialPage = O.getWithDefault(
+    O.fromNullable(searchParams.get('page')),
+    INITIAL_PAGE.toString()
+  );
+
   const [inputValue, setInputValue] = useState<string>(initialSearchValue);
   const [debouncedValue, setDebouncedValue] = useState(inputValue);
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
@@ -66,19 +71,18 @@ export const Tracks = observer(() => {
   }, [trackStore, notif]);
 
   useEffect(() => {
-    pipe(
-      O.fromNullable(debouncedValue),
-      O.filter((value) => value.trim().length > 0),
-      O.match(
-        (value: string) => {
-          setSearchParams({ search: value.trim() }, { replace: true });
-        },
-        () => {
-          setSearchParams({}, { replace: true });
-        }
-      )
-    );
-  }, [debouncedValue, setSearchParams]);
+    const params = new URLSearchParams();
+
+    if (debouncedValue.trim()) {
+      params.set('search', debouncedValue.trim());
+    }
+
+    if (trackStore.page > 1) {
+      params.set('page', trackStore.page.toString());
+    }
+
+    setSearchParams(params, { replace: true });
+  }, [debouncedValue, trackStore.page, setSearchParams]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -92,7 +96,12 @@ export const Tracks = observer(() => {
 
   useEffect(() => {
     const loadData = async () => {
-      const tracksSuccess = await fetchTracks(INITIAL_PAGE);
+      const pageFromUrl = parseInt(initialPage, 10);
+      if (pageFromUrl !== trackStore.page) {
+        trackStore.setPageFromUrl(pageFromUrl);
+      }
+
+      const tracksSuccess = await fetchTracks(pageFromUrl);
       const genresSuccess = await fetchGenres();
 
       if (tracksSuccess && genresSuccess) {
@@ -101,13 +110,16 @@ export const Tracks = observer(() => {
     };
 
     loadData().catch(console.error);
-  }, [fetchTracks, fetchGenres]);
+  }, [fetchTracks, fetchGenres, initialPage, trackStore]);
 
   const handleSearchChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       setInputValue(e.target.value);
+      if (trackStore.page !== 1) {
+        trackStore.setPage(1);
+      }
     },
-    []
+    [trackStore]
   );
 
   const handleDelete = useCallback(
@@ -234,9 +246,11 @@ export const Tracks = observer(() => {
       <Col span={24}>
         <Space direction="vertical" size="large" style={{ width: '100%' }}>
           <Controls
-            handleSearchChange={handleSearchChange}
             searchValue={inputValue}
-            showModal={showModal}
+            handleSearchChange={handleSearchChange}
+            showModal={() => {
+              showModal();
+            }}
             handleBulkDelete={handleBulkDelete}
             handleDeleteAll={handleDeleteAll}
             selectedRowKeys={selectedRowKeys as string[]}

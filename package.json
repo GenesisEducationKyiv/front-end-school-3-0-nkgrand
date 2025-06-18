@@ -9,7 +9,14 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "test": "jest"
+    "test": "jest",
+    "test:unit": "jest --testPathPattern=unit",
+    "test:integration": "jest --testPathPattern=integration",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:component": "playwright test tests/component/",
+    "test:watch": "jest --watch",
+    "test:all": "npm run test && npm run test:unit && npm run test:integration && npm run test:e2e && npm run test:component"
   },
   "dependencies": {
     "@mobily/ts-belt": "^3.13.1",
@@ -27,6 +34,10 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.22.0",
+    "@playwright/test": "^1.53.0",
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.3.0",
+    "@testing-library/user-event": "^14.6.1",
     "@types/jest": "^29.5.14",
     "@types/lodash": "^4.17.16",
     "@types/react": "^19.0.10",
@@ -38,6 +49,7 @@
     "eslint-plugin-react-refresh": "^0.4.19",
     "globals": "^16.0.0",
     "jest": "^29.7.0",
+    "jest-environment-jsdom": "^30.0.0",
     "ts-jest": "^29.3.2",
     "typescript": "~5.7.2",
     "typescript-eslint": "^8.26.1",
