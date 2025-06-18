@@ -24,19 +24,22 @@ describe('TrackStore', () => {
       coverImage: 'https://example.com/image.jpg',
       genres: ['rock'],
       audioFile: '',
-      createdAt: '',
-      updatedAt: '',
-      slug: '',
+      createdAt: '2024-01-01T00:00:00Z',
+      updatedAt: '2024-01-01T00:00:00Z',
+      slug: 'test-title',
       fileUrl: '',
     };
 
     const realTrack: Track = { ...newTrack, id: 'real-track-id' };
 
     (trackApi.addTrack as jest.Mock).mockResolvedValue({ data: realTrack });
-    const result = (await store.addTrack(newTrack as Track))._unsafeUnwrap();
+    const result = await store.addTrack(newTrack as Track);
 
-    expect(result.id).toBe('real-track-id');
-    expect(store.tracks[0].id).toBe('real-track-id');
+    expect(result.isOk()).toBe(true);
+    if (result.isOk()) {
+      expect(result.value.id).toBe('real-track-id');
+      expect(store.tracks[0].id).toBe('real-track-id');
+    }
   });
 
   it('should update an existing track', async () => {
@@ -45,12 +48,12 @@ describe('TrackStore', () => {
       title: 'Old',
       artist: 'Old Artist',
       album: 'Old Album',
-      coverImage: 'url',
+      coverImage: 'https://example.com/image.jpg',
       genres: ['pop'],
       audioFile: '',
-      createdAt: '',
-      updatedAt: '',
-      slug: '',
+      createdAt: '2024-01-01T00:00:00Z',
+      updatedAt: '2024-01-01T00:00:00Z',
+      slug: 'old',
       fileUrl: '',
     };
 
@@ -61,25 +64,28 @@ describe('TrackStore', () => {
       data: updatedTrack,
     });
 
-    const result = (await store.updateTrack(updatedTrack))._unsafeUnwrap();
+    const result = await store.updateTrack(updatedTrack);
 
-    expect(result.title).toBe('Updated');
-    expect(store.tracks[0].title).toBe('Updated');
+    expect(result.isOk()).toBe(true);
+    if (result.isOk()) {
+      expect(result.value.title).toBe('Updated');
+      expect(store.tracks[0].title).toBe('Updated');
+    }
   });
 
   it('should remove a track', async () => {
     store.tracks = [
       {
         id: 't1',
-        title: '',
-        artist: '',
-        album: '',
-        coverImage: '',
-        genres: [],
+        title: 'Test Track',
+        artist: 'Test Artist',
+        album: 'Test Album',
+        coverImage: 'https://example.com/image.jpg',
+        genres: ['pop'],
         audioFile: '',
-        createdAt: '',
-        updatedAt: '',
-        slug: '',
+        createdAt: '2024-01-01T00:00:00Z',
+        updatedAt: '2024-01-01T00:00:00Z',
+        slug: 'test-track',
         fileUrl: '',
       },
     ];
@@ -94,28 +100,28 @@ describe('TrackStore', () => {
     store.tracks = [
       {
         id: 't1',
-        title: '',
-        artist: '',
-        album: '',
-        coverImage: '',
-        genres: [],
+        title: 'Test Track 1',
+        artist: 'Test Artist 1',
+        album: 'Test Album 1',
+        coverImage: 'https://example.com/image1.jpg',
+        genres: ['pop'],
         audioFile: '',
-        createdAt: '',
-        updatedAt: '',
-        slug: '',
+        createdAt: '2024-01-01T00:00:00Z',
+        updatedAt: '2024-01-01T00:00:00Z',
+        slug: 'test-track-1',
         fileUrl: '',
       },
       {
         id: 't2',
-        title: '',
-        artist: '',
-        album: '',
-        coverImage: '',
-        genres: [],
+        title: 'Test Track 2',
+        artist: 'Test Artist 2',
+        album: 'Test Album 2',
+        coverImage: 'https://example.com/image2.jpg',
+        genres: ['rock'],
         audioFile: '',
-        createdAt: '',
-        updatedAt: '',
-        slug: '',
+        createdAt: '2024-01-01T00:00:00Z',
+        updatedAt: '2024-01-01T00:00:00Z',
+        slug: 'test-track-2',
         fileUrl: '',
       },
     ];
@@ -134,12 +140,12 @@ describe('TrackStore', () => {
         title: 'Track 1',
         artist: 'Artist 1',
         album: 'Album 1',
-        coverImage: 'url',
+        coverImage: 'https://example.com/image.jpg',
         genres: ['pop'],
         audioFile: '',
-        createdAt: '',
-        updatedAt: '',
-        slug: '',
+        createdAt: '2024-01-01T00:00:00Z',
+        updatedAt: '2024-01-01T00:00:00Z',
+        slug: 'track-1',
         fileUrl: '',
       },
     ];
@@ -147,7 +153,7 @@ describe('TrackStore', () => {
     (trackApi.fetchTracks as jest.Mock).mockResolvedValue({
       data: {
         data: mockTracks,
-        meta: { total: 1 },
+        meta: { total: 1, page: 1, limit: 10, totalPages: 1 },
       },
     });
 
@@ -176,15 +182,15 @@ describe('TrackStore', () => {
     const file = new File(['dummy'], 'track.mp3', { type: 'audio/mp3' });
     const track: Track = {
       id: 'track-id',
-      title: '',
-      artist: '',
-      album: '',
-      coverImage: '',
-      genres: [],
+      title: 'Test Track',
+      artist: 'Test Artist',
+      album: 'Test Album',
+      coverImage: 'https://example.com/image.jpg',
+      genres: ['pop'],
       audioFile: '',
-      createdAt: '',
-      updatedAt: '',
-      slug: '',
+      createdAt: '2024-01-01T00:00:00Z',
+      updatedAt: '2024-01-01T00:00:00Z',
+      slug: 'test-track',
       fileUrl: '',
     };
 
@@ -206,16 +212,16 @@ describe('TrackStore', () => {
   it('should remove track file and clear fileUrl', async () => {
     const track: Track = {
       id: 'track-id',
-      title: '',
-      artist: '',
-      album: '',
-      coverImage: '',
-      genres: [],
+      title: 'Test Track',
+      artist: 'Test Artist',
+      album: 'Test Album',
+      coverImage: 'https://example.com/image.jpg',
+      genres: ['pop'],
       fileUrl: 'some-file.mp3',
       audioFile: '',
-      createdAt: '',
-      updatedAt: '',
-      slug: '',
+      createdAt: '2024-01-01T00:00:00Z',
+      updatedAt: '2024-01-01T00:00:00Z',
+      slug: 'test-track',
     };
 
     store.tracks = [track];
@@ -224,7 +230,7 @@ describe('TrackStore', () => {
 
     await store.removeTrackFile(track.id);
 
-    expect(store.tracks[0].fileUrl).toBeUndefined();
+    expect(store.tracks[0].fileUrl).toBe(''); // Проверка на пустую строку
     expect(trackApi.removeTrackFile).toHaveBeenCalledWith(track.id);
   });
 
@@ -233,27 +239,27 @@ describe('TrackStore', () => {
       {
         id: '1',
         title: 'T1',
-        artist: '',
-        album: '',
-        coverImage: '',
-        genres: [],
+        artist: 'Artist 1',
+        album: 'Album 1',
+        coverImage: 'https://example.com/image1.jpg',
+        genres: ['pop'],
         audioFile: '',
-        createdAt: '',
-        updatedAt: '',
-        slug: '',
+        createdAt: '2024-01-01T00:00:00Z',
+        updatedAt: '2024-01-01T00:00:00Z',
+        slug: 't1',
         fileUrl: '',
       },
       {
         id: '2',
         title: 'T2',
-        artist: '',
-        album: '',
-        coverImage: '',
-        genres: [],
+        artist: 'Artist 2',
+        album: 'Album 2',
+        coverImage: 'https://example.com/image2.jpg',
+        genres: ['rock'],
         audioFile: '',
-        createdAt: '',
-        updatedAt: '',
-        slug: '',
+        createdAt: '2024-01-01T00:00:00Z',
+        updatedAt: '2024-01-01T00:00:00Z',
+        slug: 't2',
         fileUrl: '',
       },
     ];
@@ -261,7 +267,7 @@ describe('TrackStore', () => {
     (trackApi.fetchTracks as jest.Mock).mockResolvedValueOnce({
       data: {
         data: allTracks,
-        meta: { total: 2 },
+        meta: { total: 2, page: 1, limit: 100, totalPages: 1 },
       },
     });
 
