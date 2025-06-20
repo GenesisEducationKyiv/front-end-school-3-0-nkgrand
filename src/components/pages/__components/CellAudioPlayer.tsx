@@ -9,11 +9,9 @@ import { isError } from '../../../utils/isError';
 
 interface Props {
   track: Track;
-  isCurrent: boolean;
-  onToggle: () => void;
 }
 
-export const CellAudioPlayer = ({ track, isCurrent, onToggle }: Props) => {
+export const CellAudioPlayer = ({ track }: Props) => {
   const trackStore = useTrackStore();
   const [notif, contextHolder] = useNotification();
 
@@ -75,8 +73,6 @@ export const CellAudioPlayer = ({ track, isCurrent, onToggle }: Props) => {
           <TrackPlayer
             id={track.id}
             fileUrl={`/api/files/${track.audioFile ?? ''}`}
-            isPlaying={isCurrent}
-            onToggle={onToggle}
           />
           <Popconfirm
             title="Remove audio file?"

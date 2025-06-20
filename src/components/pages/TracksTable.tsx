@@ -15,8 +15,6 @@ export interface TracksTableProps {
   genres: string[];
   selectedRowKeys: React.Key[];
   onSelectionChange: (keys: React.Key[]) => void;
-  playingId: string | null;
-  onTogglePlay: (id: string) => void;
   onEdit: (track?: Track) => void;
   onDelete: (id: string) => void;
 }
@@ -24,12 +22,10 @@ export interface TracksTableProps {
 export const TracksTable = observer((props: TracksTableProps) => {
   const {
     tracks,
-    playingId,
     selectedRowKeys,
     onSelectionChange,
     onDelete,
     onEdit,
-    onTogglePlay,
   } = props;
   const trackStore = useTrackStore();
   const columns: ColumnsType<Track> = useMemo(() => {
@@ -110,13 +106,7 @@ export const TracksTable = observer((props: TracksTableProps) => {
         key: 'play',
         width: 240,
         render: (_, record) => (
-          <CellAudioPlayer
-            track={record}
-            isCurrent={playingId === record.id}
-            onToggle={() => {
-              onTogglePlay(record.id);
-            }}
-          />
+          <CellAudioPlayer track={record} />
         ),
       },
       {
@@ -161,10 +151,8 @@ export const TracksTable = observer((props: TracksTableProps) => {
   }, [
     trackStore.tracks,
     trackStore.genres,
-    playingId,
     onEdit,
     onDelete,
-    onTogglePlay,
   ]);
 
   return (

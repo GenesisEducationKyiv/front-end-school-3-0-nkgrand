@@ -1,29 +1,30 @@
-import React from 'react';
 import { Button } from 'antd';
+import { observer } from 'mobx-react-lite';
 import { Waveform } from './Waweform';
 import { PauseCircleOutlined, PlayCircleOutlined } from '@ant-design/icons';
+import { player } from '../../../stores/Player';
 
 interface TrackPlayerProps {
   id: string;
   fileUrl: string;
-  isPlaying: boolean;
-  onToggle: () => void;
 };
 
-export const TrackPlayer = React.memo(
-  ({ id, fileUrl, isPlaying, onToggle }: TrackPlayerProps) => (
-    <div data-testid={`audio-player-${id}`}>
-      <Waveform
-        src={fileUrl}
-        playing={isPlaying}
-        dataTestId={`audio-progress-${id}`}
-      />
-      <Button
-        icon={isPlaying ? <PauseCircleOutlined /> : <PlayCircleOutlined />}
-        type="link"
-        onClick={onToggle}
-        data-testid={`${isPlaying ? 'pause' : 'play'}-button-${id}`}
-      />
-    </div>
-  )
+export const TrackPlayer = observer(
+  ({ id, fileUrl }: TrackPlayerProps) => {
+    return (
+      <div data-testid={`audio-player-${id}`}>
+        <Waveform
+          src={fileUrl}
+          playing={player.isPlaying}
+          dataTestId={`audio-progress-${id}`}
+        />
+        <Button
+          icon={player.isPlaying ? <PauseCircleOutlined /> : <PlayCircleOutlined />}
+          type="link"
+          onClick={() => player.togglePlay(id)}
+          data-testid={`${player.isPlaying ? 'pause' : 'play'}-button-${id}`}
+        />
+      </div>
+    )
+  }
 );
