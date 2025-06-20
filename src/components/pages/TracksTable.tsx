@@ -1,11 +1,15 @@
-import { Button, Checkbox, Popconfirm, Space, Table } from 'antd';
+import { Button, Checkbox, Table, Dropdown, Modal } from 'antd';
 import { observer } from 'mobx-react-lite';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { type Track } from '../../schemas/track.schema';
 import { CellAudioPlayer } from './__components/CellAudioPlayer';
 import type { ColumnsType } from 'antd/es/table';
 import { useTrackStore } from '../../context/TrackStoreContext';
-import { QuestionCircleOutlined } from '@ant-design/icons';
+import {
+  EllipsisOutlined,
+  EditOutlined,
+  DeleteOutlined,
+} from '@ant-design/icons';
 
 const DEFAULT_COVER_IMG =
   'https://www.contentviewspro.com/wp-content/uploads/2017/07/default_image.png';
@@ -20,14 +24,13 @@ export interface TracksTableProps {
 }
 
 export const TracksTable = observer((props: TracksTableProps) => {
-  const {
-    tracks,
-    selectedRowKeys,
-    onSelectionChange,
-    onDelete,
-    onEdit,
-  } = props;
+  const { tracks, selectedRowKeys, onSelectionChange, onDelete, onEdit } =
+    props;
   const trackStore = useTrackStore();
+
+  // State for modal
+  const [deleteId, setDeleteId] = useState<string | null>(null);
+
   const columns: ColumnsType<Track> = useMemo(() => {
     const genreFilters = trackStore.genres.map((g: string) => ({
       text: g,
@@ -105,55 +108,74 @@ export const TracksTable = observer((props: TracksTableProps) => {
         title: 'Player',
         key: 'play',
         width: 240,
-        render: (_, record) => (
-          <CellAudioPlayer track={record} />
-        ),
+        render: (_, record) => <CellAudioPlayer track={record} />,
       },
       {
         title: 'Actions',
         key: 'actions',
+        align: 'center',
         render: (_, record) => (
-          <Space direction="vertical" size="small">
-            <Button
-              type="link"
-              onClick={() => {
-                onEdit(record);
+          <>
+            <Dropdown
+              menu={{
+                items: [
+                  {
+                    key: 'edit',
+                    label: (
+                      <span data-testid={`edit-track-${record.id}`}>Edit</span>
+                    ),
+                    icon: <EditOutlined />,
+                    onClick: () => {
+                      onEdit(record);
+                    },
+                  },
+                  {
+                    key: 'delete',
+                    label: (
+                      <span
+                        data-testid={`delete-track-${record.id}`}
+                        style={{ color: 'red', cursor: 'pointer' }}
+                      >
+                        Delete
+                      </span>
+                    ),
+                    icon: <DeleteOutlined style={{ color: 'red' }} />,
+                    onClick: () => {
+                      setDeleteId(record.id);
+                    },
+                  },
+                ],
               }}
-              data-testid={`edit-track-${record.id}`}
+              trigger={['click']}
             >
-              Edit
-            </Button>
-            <Popconfirm
+              <Button icon={<EllipsisOutlined />} type="link" />
+            </Dropdown>
+            <Modal
+              open={deleteId === record.id}
+              onCancel={() => {
+                setDeleteId(null);
+              }}
+              onOk={() => {
+                if (deleteId) onDelete(deleteId);
+                setDeleteId(null);
+              }}
+              okButtonProps={{ danger: true }}
+              okText="Delete"
+              cancelText="Cancel"
               title={
                 <span data-testid="confirm-dialog">
                   Are you sure to delete this track?
                 </span>
               }
-              onConfirm={() => {
-                onDelete(record.id);
-              }}
-              okButtonProps={{ danger: true }}
-              okText="Delete"
-              icon={<QuestionCircleOutlined style={{ color: 'red' }} />}
-            >
-              <Button
-                danger
-                type="text"
-                data-testid={`delete-track-${record.id}`}
-              >
-                Delete
-              </Button>
-            </Popconfirm>
-          </Space>
+              centered
+              width={320}
+              destroyOnClose
+            />
+          </>
         ),
       },
     ];
-  }, [
-    trackStore.tracks,
-    trackStore.genres,
-    onEdit,
-    onDelete,
-  ]);
+  }, [trackStore.tracks, trackStore.genres, onEdit, onDelete, deleteId]);
 
   return (
     <div data-testid="pagination">
@@ -161,7 +183,6 @@ export const TracksTable = observer((props: TracksTableProps) => {
         dataSource={tracks}
         columns={columns}
         rowKey="id"
-        // style={{ width: 1024 }}
         loading={trackStore.loading}
         data-testid="loading-tracks"
         data-loading={trackStore.loading || undefined}

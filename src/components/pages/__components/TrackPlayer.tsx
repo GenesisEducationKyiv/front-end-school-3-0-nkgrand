@@ -7,24 +7,36 @@ import { player } from '../../../stores/Player';
 interface TrackPlayerProps {
   id: string;
   fileUrl: string;
-};
+}
 
-export const TrackPlayer = observer(
-  ({ id, fileUrl }: TrackPlayerProps) => {
-    return (
-      <div data-testid={`audio-player-${id}`}>
+export const TrackPlayer = observer(({ id, fileUrl }: TrackPlayerProps) => {
+  const isCurrent = player.activeTrackId === id;
+  return (
+    <div
+      data-testid={`audio-player-${id}`}
+      style={{ display: 'flex', alignItems: 'center', width: '100%' }}
+    >
+      <Button
+        icon={isCurrent ? <PauseCircleOutlined /> : <PlayCircleOutlined />}
+        type="link"
+        size="small"
+        onClick={() => {
+          if (isCurrent) {
+            player.pause();
+          } else {
+            player.play(id);
+          }
+        }}
+        data-testid={`${isCurrent ? 'pause' : 'play'}-button-${id}`}
+        style={{ marginRight: 8 }}
+      />
+      <div style={{ flex: 1, minWidth: 0 }}>
         <Waveform
           src={fileUrl}
-          playing={player.isPlaying}
+          playing={isCurrent}
           dataTestId={`audio-progress-${id}`}
         />
-        <Button
-          icon={player.isPlaying ? <PauseCircleOutlined /> : <PlayCircleOutlined />}
-          type="link"
-          onClick={() => player.togglePlay(id)}
-          data-testid={`${player.isPlaying ? 'pause' : 'play'}-button-${id}`}
-        />
       </div>
-    )
-  }
-);
+    </div>
+  );
+});
