@@ -12,12 +12,50 @@ A single-page application for managing music tracks, built with **React**, **Typ
 npm install
 ```
 
+### Environment Configuration
+Create a `.env` file in the client directory:
+```bash
+VITE_API_TARGET=http://localhost:8000
+VITE_API_PORT=3001
+```
+
 ### Start the development server
 ```bash
 npm run dev
 ```
 
-> The app will be available at: `http://localhost:3000`
+> The app will be available at: `http://localhost:3001`
+
+### Build for production
+```bash
+npm run build
+```
+
+### Analyze bundle size
+After building, a bundle analysis report will automatically open in your browser showing the size breakdown of your application.
+
+---
+
+## 🚀 Performance Optimizations
+
+### Bundle Analysis
+- **Bundle Analyzer**: Integrated with `rollup-plugin-visualizer`
+- **Automatic Report**: Opens after `npm run build`
+- **File**: `dist/bundle-report.html`
+
+### Code Splitting & Lazy Loading
+- **Modal Components**: `CreateEditTrackModal` loads only when opened
+- **Audio Components**: `TrackPlayer`, `CellAudioPlayer`, `Waveform` load on demand
+- **React.lazy**: Used for heavy components to reduce initial bundle size
+
+### Tree Shaking
+- **Optimized Imports**: All library imports are tree-shakable
+- **Ant Design**: Components imported individually for optimal tree shaking
+- **MobX**: Only required functions imported (`makeAutoObservable`, `runInAction`)
+
+### Source Maps
+- **Production Source Maps**: Enabled for debugging production builds
+- **Development**: Full source maps for development experience
 
 ---
 

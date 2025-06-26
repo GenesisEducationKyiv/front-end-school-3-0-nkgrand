@@ -1,9 +1,15 @@
-import { useEffect, useState, useCallback, useMemo } from 'react';
+import {
+  lazy,
+  Suspense,
+  useEffect,
+  useState,
+  useCallback,
+  useMemo,
+} from 'react';
 import { Space, Col, Typography, notification } from 'antd';
 import { observer } from 'mobx-react-lite';
 import { useSearchParams } from 'react-router-dom';
 import { type Track } from '../../schemas/track.schema';
-import { CreateEditTrackModal } from './__components/CreateEditTrackModal';
 import { Controls } from './__components/Controls';
 import { O, pipe } from '@mobily/ts-belt';
 import { TracksTable } from './TracksTable';
@@ -14,6 +20,12 @@ import { player } from '../../stores/Player';
 const INITIAL_PAGE = 1;
 
 const { Title } = Typography;
+
+const CreateEditTrackModal = lazy(() =>
+  import('./__components/CreateEditTrackModal').then((module) => ({
+    default: module.CreateEditTrackModal,
+  }))
+);
 
 export const Tracks = observer(() => {
   const trackStore = useTrackStore();
@@ -206,7 +218,7 @@ export const Tracks = observer(() => {
   }, [debouncedValue, trackStore.tracks]);
 
   const showModal = useCallback((track?: Track) => {
-    player.pause()
+    player.pause();
     setCurrentTrack(track ?? null);
     setIsModalVisible(true);
   }, []);
@@ -261,12 +273,14 @@ export const Tracks = observer(() => {
             onDelete={handleDelete}
           />
 
-          <CreateEditTrackModal
-            visible={isModalVisible}
-            onClose={handleClose}
-            track={currentTrack}
-            notificationApi={notif}
-          />
+          <Suspense fallback={null}>
+            <CreateEditTrackModal
+              visible={isModalVisible}
+              onClose={handleClose}
+              track={currentTrack}
+              notificationApi={notif}
+            />
+          </Suspense>
         </Space>
       </Col>
     </>
