@@ -129,3 +129,17 @@ Selection checkboxes are always visible (Ant Design default). An explicit toggle
 
 ## 📝 License
 MIT
+
+## 🧪 Testing
+
+- **Unit and integration tests** are run automatically in CI/CD.
+- **Playwright (e2e) tests** require a running backend server and are NOT executed by default in CI/CD.
+  - To run e2e tests locally:
+    1. Start the backend server (`npm run dev`)
+    2. Start the client server (`cd client & npm run dev`)
+    3. Run e2e tests: `npm run test:e2e`
+
+---
+
+
+![CI](https://github.com/GenesisEducationKyiv/front-end-school-3-0-nkgrand/actions/workflows/ci.yml/badge.svg)
