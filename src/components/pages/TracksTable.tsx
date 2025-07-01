@@ -187,6 +187,7 @@ export const TracksTable = observer((props: TracksTableProps) => {
           showSizeChanger: true,
           onShowSizeChange: (_, size) => {
             trackStore.setLimit(size);
+            trackStore.setPage(1);
           },
           pageSizeOptions: ['5', '10', '20', '30'],
           position: ['bottomCenter'],

@@ -44,7 +44,7 @@ export class TrackStore {
       },
       (e) => {
         console.error('Failed to fetch tracks:', e.message);
-      },
+      }
     );
 
     runInAction(() => {
@@ -84,6 +84,10 @@ export class TrackStore {
   setLimit(limit: number): void {
     this.limit = limit;
     void this.fetchTracks(this.page);
+  }
+
+  setPageFromUrl(page: number): void {
+    this.page = page;
   }
 
   // async addTrack(track: Track): Promise<Track> {
@@ -169,7 +173,6 @@ export class TrackStore {
     );
   }
 
-
   // async updateTrack(updated: Track): Promise<Track> {
   //   const prev = [...this.tracks];
 
@@ -253,7 +256,6 @@ export class TrackStore {
     );
   }
 
-
   async removeTrack(trackId: string): Promise<void> {
     const prev = [...this.tracks];
 
@@ -267,7 +269,9 @@ export class TrackStore {
       .catch((e: unknown) => err(isError(e) ? e : new Error(String(e))));
 
     result.match(
-      () => { console.log('Track successfully removed'); },
+      () => {
+        console.log('Track successfully removed');
+      },
       (e) => {
         runInAction(() => {
           this.tracks = prev;
@@ -290,7 +294,9 @@ export class TrackStore {
       .catch((e: unknown) => err(isError(e) ? e : new Error(String(e))));
 
     result.match(
-      () => { console.log('Tracks successfully removed'); },
+      () => {
+        console.log('Tracks successfully removed');
+      },
       (e) => {
         runInAction(() => {
           this.tracks = prev;
