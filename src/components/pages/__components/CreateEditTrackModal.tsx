@@ -114,149 +114,153 @@ export const CreateEditTrackModal = ({
       onCancel={onClose}
       destroyOnClose={true}
     >
-      <Form
-        form={form}
-        onFinish={(values) => {
-          void handleSubmit(values as TrackFormValues);
-        }}
-        layout="vertical"
-        data-testid="track-form"
-      >
-        <Form.Item
-          label="Track Title"
-          name="title"
-          rules={[
-            {
-              required: true,
-              message: (
-                <span data-testid="error-title">
-                  Please enter the track title!
-                </span>
-              ),
-            },
-          ]}
-          validateStatus={form.getFieldError('title').length ? 'error' : ''}
+      {visible && (
+        <Form
+          form={form}
+          onFinish={(values) => {
+            void handleSubmit(values as TrackFormValues);
+          }}
+          layout="vertical"
+          data-testid="track-form"
         >
-          <Input data-testid="input-title" />
-        </Form.Item>
-
-        <Form.Item
-          label="Artist"
-          name="artist"
-          rules={[
-            {
-              required: true,
-              message: (
-                <span data-testid="error-artist">
-                  Please enter the artist name!
-                </span>
-              ),
-            },
-          ]}
-          validateStatus={form.getFieldError('artist').length ? 'error' : ''}
-        >
-          <Input data-testid="input-artist" />
-        </Form.Item>
-
-        <Form.Item
-          label="Album"
-          name="album"
-          rules={[
-            {
-              required: true,
-              message: (
-                <span data-testid="error-album">
-                  Please enter the album name!
-                </span>
-              ),
-            },
-          ]}
-          validateStatus={form.getFieldError('album').length ? 'error' : ''}
-        >
-          <Input data-testid="input-album" />
-        </Form.Item>
-
-        <Form.Item
-          label="Genres"
-          required
-          validateStatus={genres.length === 0 ? 'error' : ''}
-          help={
-            genres.length === 0 ? (
-              <span data-testid="error-genre">
-                Please select at least one genre
-              </span>
-            ) : null
-          }
-        >
-          <Space direction="vertical" style={{ width: '100%' }}>
-            {genres.length > 0 && (
-              <div>
-                {genres.map((g) => (
-                  <Tag
-                    key={g}
-                    closable
-                    onClose={() => {
-                      handleRemoveGenre(g);
-                    }}
-                  >
-                    {g}
-                  </Tag>
-                ))}
-              </div>
-            )}
-            <Select
-              style={{ width: '100%' }}
-              placeholder="Add genre"
-              onChange={handleAddGenre}
-              options={availableGenres.map((g) => ({ label: g, value: g }))}
-              allowClear
-              data-testid="genre-selector"
-            />
-          </Space>
-        </Form.Item>
-
-        <Form.Item
-          label="Cover Image URL"
-          name="coverImage"
-          rules={[
-            {
-              required: true,
-              message: (
-                <span data-testid="error-coverImage">
-                  Please provide a cover image URL!
-                </span>
-              ),
-            },
-            {
-              validator(_, value: string) {
-                if (!/^https?:\/\/.+/.test(value)) {
-                  return Promise.reject(new Error('URL must start with http:// or https://'));
-                }
-                return Promise.resolve();
+          <Form.Item
+            label="Track Title"
+            name="title"
+            rules={[
+              {
+                required: true,
+                message: (
+                  <span data-testid="error-title">
+                    Please enter the track title!
+                  </span>
+                ),
               },
-            },
-          ]}
-          validateStatus={
-            form.getFieldError('coverImage').length ? 'error' : ''
-          }
-        >
-          <Input data-testid="input-cover-image" />
-        </Form.Item>
-
-        <Form.Item>
-          <Button
-            type="primary"
-            htmlType="submit"
-            block
-            data-testid="submit-button"
-            aria-disabled={trackStore.loading}
-            disabled={trackStore.loading}
-            loading={trackStore.loading}
+            ]}
+            validateStatus={form.getFieldError('title').length ? 'error' : ''}
           >
-            {track ? 'Save Changes' : 'Create Track'}
-          </Button>
-        </Form.Item>
-      </Form>
+            <Input data-testid="input-title" />
+          </Form.Item>
+
+          <Form.Item
+            label="Artist"
+            name="artist"
+            rules={[
+              {
+                required: true,
+                message: (
+                  <span data-testid="error-artist">
+                    Please enter the artist name!
+                  </span>
+                ),
+              },
+            ]}
+            validateStatus={form.getFieldError('artist').length ? 'error' : ''}
+          >
+            <Input data-testid="input-artist" />
+          </Form.Item>
+
+          <Form.Item
+            label="Album"
+            name="album"
+            rules={[
+              {
+                required: true,
+                message: (
+                  <span data-testid="error-album">
+                    Please enter the album name!
+                  </span>
+                ),
+              },
+            ]}
+            validateStatus={form.getFieldError('album').length ? 'error' : ''}
+          >
+            <Input data-testid="input-album" />
+          </Form.Item>
+
+          <Form.Item
+            label="Genres"
+            required
+            validateStatus={genres.length === 0 ? 'error' : ''}
+            help={
+              genres.length === 0 ? (
+                <span data-testid="error-genre">
+                  Please select at least one genre
+                </span>
+              ) : null
+            }
+          >
+            <Space direction="vertical" style={{ width: '100%' }}>
+              {genres.length > 0 && (
+                <div>
+                  {genres.map((g) => (
+                    <Tag
+                      key={g}
+                      closable
+                      onClose={() => {
+                        handleRemoveGenre(g);
+                      }}
+                    >
+                      {g}
+                    </Tag>
+                  ))}
+                </div>
+              )}
+              <Select
+                style={{ width: '100%' }}
+                placeholder="Add genre"
+                onChange={handleAddGenre}
+                options={availableGenres.map((g) => ({ label: g, value: g }))}
+                allowClear
+                data-testid="genre-selector"
+              />
+            </Space>
+          </Form.Item>
+
+          <Form.Item
+            label="Cover Image URL"
+            name="coverImage"
+            rules={[
+              {
+                required: true,
+                message: (
+                  <span data-testid="error-coverImage">
+                    Please provide a cover image URL!
+                  </span>
+                ),
+              },
+              {
+                validator(_, value: string) {
+                  if (!/^https?:\/\/.+/.test(value)) {
+                    return Promise.reject(
+                      new Error('URL must start with http:// or https://')
+                    );
+                  }
+                  return Promise.resolve();
+                },
+              },
+            ]}
+            validateStatus={
+              form.getFieldError('coverImage').length ? 'error' : ''
+            }
+          >
+            <Input data-testid="input-cover-image" />
+          </Form.Item>
+
+          <Form.Item>
+            <Button
+              type="primary"
+              htmlType="submit"
+              block
+              data-testid="submit-button"
+              aria-disabled={trackStore.loading}
+              disabled={trackStore.loading}
+              loading={trackStore.loading}
+            >
+              {track ? 'Save Changes' : 'Create Track'}
+            </Button>
+          </Form.Item>
+        </Form>
+      )}
     </Modal>
   );
 };
