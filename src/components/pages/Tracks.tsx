@@ -9,6 +9,7 @@ import { O, pipe } from '@mobily/ts-belt';
 import { TracksTable } from './TracksTable';
 import { useTrackStore } from '../../context/TrackStoreContext';
 import { isError } from '../../utils/isError';
+import { player } from '../../stores/Player';
 
 const INITIAL_PAGE = 1;
 
@@ -35,7 +36,6 @@ export const Tracks = observer(() => {
   const [debouncedValue, setDebouncedValue] = useState(inputValue);
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
   const [notif, contextHolder] = notification.useNotification();
-  const [playingId, setPlayingId] = useState<string | null>(null);
 
   const fetchTracks = useCallback(
     async (page: number) => {
@@ -205,15 +205,11 @@ export const Tracks = observer(() => {
     );
   }, [debouncedValue, trackStore.tracks]);
 
-  const togglePlay = useCallback((id: string) => {
-    setPlayingId((prev) => (prev === id ? null : id));
-  }, []);
-
-  const showModal = (track?: Track) => {
-    setPlayingId(null);
+  const showModal = useCallback((track?: Track) => {
+    player.pause()
     setCurrentTrack(track ?? null);
     setIsModalVisible(true);
-  };
+  }, []);
 
   const handleClose = useCallback(() => {
     setIsModalVisible(false);
@@ -261,8 +257,6 @@ export const Tracks = observer(() => {
             genres={trackStore.genres}
             selectedRowKeys={selectedRowKeys}
             onSelectionChange={setSelectedRowKeys}
-            playingId={playingId}
-            onTogglePlay={togglePlay}
             onEdit={showModal}
             onDelete={handleDelete}
           />

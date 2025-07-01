@@ -1,5 +1,5 @@
-import { Upload, Button, Popconfirm, Space } from 'antd';
-import { UploadOutlined } from '@ant-design/icons';
+import { Upload, Button, Popconfirm, Tooltip } from 'antd';
+import { DeleteOutlined, UploadOutlined } from '@ant-design/icons';
 import { type Track } from '../../../schemas/track.schema';
 import { TrackPlayer } from './TrackPlayer';
 import useNotification from 'antd/es/notification/useNotification';
@@ -9,11 +9,9 @@ import { isError } from '../../../utils/isError';
 
 interface Props {
   track: Track;
-  isCurrent: boolean;
-  onToggle: () => void;
 }
 
-export const CellAudioPlayer = ({ track, isCurrent, onToggle }: Props) => {
+export const CellAudioPlayer = ({ track }: Props) => {
   const trackStore = useTrackStore();
   const [notif, contextHolder] = useNotification();
 
@@ -67,16 +65,18 @@ export const CellAudioPlayer = ({ track, isCurrent, onToggle }: Props) => {
     <>
       {contextHolder}
       {hasAudio ? (
-        <Space
-          direction="vertical"
-          style={{ width: '100%' }}
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            width: '100%',
+          }}
           data-testid={`audio-block-${track.id}`}
         >
           <TrackPlayer
             id={track.id}
             fileUrl={`/api/files/${track.audioFile ?? ''}`}
-            isPlaying={isCurrent}
-            onToggle={onToggle}
           />
           <Popconfirm
             title="Remove audio file?"
@@ -88,15 +88,17 @@ export const CellAudioPlayer = ({ track, isCurrent, onToggle }: Props) => {
             okButtonProps={{ 'data-testid': `remove-confirm-${track.id}` }}
             cancelButtonProps={{ 'data-testid': `remove-cancel-${track.id}` }}
           >
-            <Button
-              danger
-              size="small"
-              data-testid={`remove-audio-${track.id}`}
-            >
-              Remove
-            </Button>
+            <Tooltip title="Delete audio file">
+              <Button
+                danger
+                size="small"
+                data-testid={`remove-audio-${track.id}`}
+                icon={<DeleteOutlined />}
+                type="link"
+              />
+            </Tooltip>
           </Popconfirm>
-        </Space>
+        </div>
       ) : (
         <Upload
           customRequest={({ file }) => {
