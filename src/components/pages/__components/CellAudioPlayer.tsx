@@ -1,4 +1,7 @@
-import { Upload, Button, Popconfirm, Tooltip } from 'antd';
+import Upload from 'antd/es/upload';
+import Button from 'antd/es/button';
+import Popconfirm from 'antd/es/popconfirm';
+import Tooltip from 'antd/es/tooltip';
 import { DeleteOutlined, UploadOutlined } from '@ant-design/icons';
 import { type Track } from '../../../schemas/track.schema';
 import { lazy, Suspense } from 'react';

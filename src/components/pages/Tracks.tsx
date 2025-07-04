@@ -6,7 +6,10 @@ import {
   useCallback,
   useMemo,
 } from 'react';
-import { Space, Col, Typography, notification } from 'antd';
+import Space from 'antd/es/space';
+import Col from 'antd/es/col';
+import Typography from 'antd/es/typography';
+import notification from 'antd/es/notification';
 import { observer } from 'mobx-react-lite';
 import { useSearchParams } from 'react-router-dom';
 import { type Track } from '../../schemas/track.schema';

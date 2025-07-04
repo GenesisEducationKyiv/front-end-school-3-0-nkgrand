@@ -1,7 +1,6 @@
-import { Layout, Menu } from 'antd';
+import { Header as AntdHeader } from 'antd/es/layout/layout';
+import Menu from 'antd/es/menu';
 import { Link } from 'react-router-dom';
-
-const { Header: AntdHeader } = Layout;
 
 export const Header = () => {
   const items = [

@@ -1,4 +1,4 @@
-import { Button } from 'antd';
+import Button from 'antd/es/button';
 import { observer } from 'mobx-react-lite';
 import { lazy, Suspense } from 'react';
 import { PauseCircleOutlined, PlayCircleOutlined } from '@ant-design/icons';

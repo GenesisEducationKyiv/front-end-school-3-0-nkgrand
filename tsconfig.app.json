@@ -26,5 +26,5 @@
     "noUncheckedSideEffectImports": true,
     "esModuleInterop": true
   },
-  "include": ["src", "e2e/**/*.ts"]
+  "include": ["src", "e2e/**/*.ts", "auto-imports.d.ts"]
 }

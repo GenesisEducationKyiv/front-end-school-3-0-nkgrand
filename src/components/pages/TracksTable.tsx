@@ -1,4 +1,8 @@
-import { Button, Checkbox, Table, Dropdown, Modal } from 'antd';
+import Button from 'antd/es/button';
+import Checkbox from 'antd/es/checkbox';
+import Table from 'antd/es/table';
+import Dropdown from 'antd/es/dropdown';
+import Modal from 'antd/es/modal';
 import { observer } from 'mobx-react-lite';
 import { useMemo, useState, lazy, Suspense } from 'react';
 import { type Track } from '../../schemas/track.schema';
@@ -57,6 +61,7 @@ export const TracksTable = observer((props: TracksTableProps) => {
             <img
               src={url || DEFAULT_COVER_IMG}
               alt="Cover"
+              loading="lazy"
               style={{
                 width: 50,
                 height: 50,

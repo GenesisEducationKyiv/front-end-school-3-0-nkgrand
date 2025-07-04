@@ -1,5 +1,11 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { Modal, Form, Input, Button, Select, Tag, Space } from 'antd';
+import Modal from 'antd/es/modal';
+import Form from 'antd/es/form';
+import Input from 'antd/es/input';
+import Button from 'antd/es/button';
+import Select from 'antd/es/select';
+import Tag from 'antd/es/tag';
+import Space from 'antd/es/space';
 import { type Track } from '../../../schemas/track.schema';
 import { useTrackStore } from '../../../context/TrackStoreContext';
 import type { NotificationInstance } from 'antd/es/notification/interface';
