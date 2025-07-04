@@ -8,7 +8,13 @@ export default defineConfig(({ mode }) => {
   return {
     plugins: [
       react(),
-      visualizer({ open: true, filename: 'bundle-report.html' }),
+      visualizer({
+        open: true,
+        filename: 'bundle-report.html',
+        template: 'treemap',
+        gzipSize: true,
+        brotliSize: true,
+      }),
     ],
     server: {
       port: Number(env.VITE_API_PORT),
@@ -24,7 +30,27 @@ export default defineConfig(({ mode }) => {
       },
     },
     build: {
-      sourcemap: true,
+      rollupOptions: {
+        output: {
+          manualChunks: {
+            vendor: ['react', 'react-dom'],
+            antd: ['antd'],
+            mobx: ['mobx', 'mobx-react-lite'],
+            router: ['react-router-dom'],
+            tsbelt: ['@mobily/ts-belt'],
+            zod: ['zod'],
+            utils: ['axios', 'neverthrow'],
+          },
+        },
+        external: [],
+      },
+      commonjsOptions: {
+        include: [/node_modules/],
+        transformMixedEsModules: true,
+      },
+    },
+    optimizeDeps: {
+      include: ['react', 'react-dom'],
     },
   };
 });

@@ -4,16 +4,15 @@ import {
   Routes,
   Navigate,
 } from 'react-router-dom';
-import { Divider, Layout } from 'antd';
-import { Tracks } from './components/pages/Tracks';
+import Layout, { Content, Footer } from 'antd/es/layout/layout';
+import Divider from 'antd/es/divider';
 import { Header } from './components/Header/Header';
+import { Tracks } from './components/pages/Tracks';
 import { Artists } from './components/pages/Artists';
 import { Albums } from './components/pages/Albums';
 import { Genres } from './components/pages/Genres';
 import { Settings } from './components/pages/Settings';
 import { TrackStoreProvider } from './provider/TrackStoreProvider';
-
-const { Content, Footer } = Layout;
 
 const App = () => {
   return (

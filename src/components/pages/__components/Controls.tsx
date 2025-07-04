@@ -1,4 +1,7 @@
-import { Button, Input, Popconfirm, Space } from 'antd';
+import Button from 'antd/es/button';
+import Input from 'antd/es/input';
+import Popconfirm from 'antd/es/popconfirm';
+import Space from 'antd/es/space';
 import { useTrackStore } from '../../../context/TrackStoreContext';
 import { observer } from 'mobx-react-lite';
 import { QuestionCircleOutlined } from '@ant-design/icons';
