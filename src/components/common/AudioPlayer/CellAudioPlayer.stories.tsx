@@ -1,11 +1,11 @@
 
-import type { Meta, StoryObj } from '@storybook/react';
-import { CellAudioPlayer } from './CellAudioPlayer_storybook_only';
-import { Track } from '../../../schemas/track.schema';
+import type { Meta, StoryObj } from '@storybook/react-vite';
+import { CellAudioPlayer } from './CellAudioPlayer';
+import type { Track } from '../../../schemas/track.schema';
 import React from 'react';
 
 // 1. Моковый TrackStoreContext и провайдер
-const TrackStoreContext = React.createContext<any>(null);
+const TrackStoreContext = React.createContext<unknown>(null);
 
 const mockTrackStore = {
   uploadTrackFile: async () => Promise.resolve(),
