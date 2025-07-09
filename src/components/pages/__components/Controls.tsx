@@ -1,7 +1,10 @@
-import { Button, Input, Popconfirm, Space } from 'antd';
+import Popconfirm from 'antd/es/popconfirm';
+import Space from 'antd/es/space';
 import { useTrackStore } from '../../../context/TrackStoreContext';
 import { observer } from 'mobx-react-lite';
 import { QuestionCircleOutlined } from '@ant-design/icons';
+import { Button } from '../../common/Button/Button';
+import { SearchInput } from '../../common/Search/Search';
 
 interface ControlsProps {
   handleSearchChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
@@ -25,13 +28,12 @@ export const Controls = observer(
 
     return (
       <Space>
-        <Input
-          placeholder="Search tracks"
+        <SearchInput
           data-testid="search-input"
           onChange={handleSearchChange}
           value={searchValue}
           style={{ width: 300 }}
-          allowClear
+          entity={'tracks'}
         />
         <Button
           data-testid="create-track-button"

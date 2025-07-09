@@ -1,0 +1,16 @@
+{
+  "name": "Music Library",
+  "short_name": "MusicLib",
+  "description": "Discover and manage your music collection",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#1890ff",
+  "icons": [
+    {
+      "src": "/music.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+} 
