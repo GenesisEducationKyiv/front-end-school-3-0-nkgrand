@@ -1,5 +1,4 @@
 import Upload from 'antd/es/upload';
-import Button from 'antd/es/button';
 import Popconfirm from 'antd/es/popconfirm';
 import Tooltip from 'antd/es/tooltip';
 import { DeleteOutlined, UploadOutlined } from '@ant-design/icons';
@@ -9,13 +8,14 @@ import useNotification from 'antd/es/notification/useNotification';
 import { useTrackStore } from '../../../context/TrackStoreContext';
 import { type Result, ok, err } from 'neverthrow';
 import { isError } from '../../../utils/isError';
+import { Button } from '../Button/Button';
 
 interface Props {
   track: Track;
 }
 
 const TrackPlayer = lazy(() =>
-  import('./TrackPlayer').then((module) => ({ default: module.TrackPlayer }))
+  import('../../pages/__components/TrackPlayer').then((module) => ({ default: module.TrackPlayer }))
 );
 
 export const CellAudioPlayer = ({ track }: Props) => {
@@ -84,7 +84,7 @@ export const CellAudioPlayer = ({ track }: Props) => {
           <Suspense fallback={null}>
             <TrackPlayer
               id={track.id}
-              fileUrl={`/api/files/${track.audioFile ?? ''}`}
+              fileUrl={`/${track.audioFile ?? ''}`}
             />
           </Suspense>
           <Popconfirm

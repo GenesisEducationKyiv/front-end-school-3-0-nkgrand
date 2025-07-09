@@ -1,4 +1,3 @@
-import Button from 'antd/es/button';
 import Checkbox from 'antd/es/checkbox';
 import Table from 'antd/es/table';
 import Dropdown from 'antd/es/dropdown';
@@ -13,12 +12,14 @@ import {
   EditOutlined,
   DeleteOutlined,
 } from '@ant-design/icons';
+import { Button } from '../common/Button/Button';
+import { Tag } from '../common/Tag/Tag';
 
 const DEFAULT_COVER_IMG =
   'https://www.contentviewspro.com/wp-content/uploads/2017/07/default_image.png';
 
 const CellAudioPlayer = lazy(() =>
-  import('./__components/CellAudioPlayer').then((module) => ({
+  import('../common/AudioPlayer/CellAudioPlayer').then((module) => ({
     default: module.CellAudioPlayer,
   }))
 );
@@ -111,7 +112,15 @@ export const TracksTable = observer((props: TracksTableProps) => {
         key: 'genres',
         filters: genreFilters,
         onFilter: (value, record) => record.genres.includes(value as string),
-        render: (genres: string[]) => genres.join(', '),
+        render: (genres: string[]) => (
+          <>
+            {genres.map((genre) => (
+              <Tag key={genre} color="blue" data-testid={`genre-tag-${genre}`}>
+                {genre}
+              </Tag>
+            ))}
+          </>
+        ),
         width: 200,
       },
       {
