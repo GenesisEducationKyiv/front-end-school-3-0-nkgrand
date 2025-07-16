@@ -1,0 +1,16 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://best-music-ever.com.ua/sitemap.xml
+
+# Disallow admin or private areas (if any)
+Disallow: /api/
+Disallow: /admin/
+Disallow: /private/
+
+# Allow all other content
+Allow: /tracks/
+Allow: /artists/
+Allow: /albums/
+Allow: /genres/ 

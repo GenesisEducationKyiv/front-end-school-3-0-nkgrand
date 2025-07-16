@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import { TrackStore } from '../stores/TrackStore';
 import { TrackStoreContext } from '../context/TrackStoreContext';
 import type { PropsWithChildren } from 'react';
