@@ -19,6 +19,7 @@
     "test:all": "npm run test && npm run test:unit && npm run test:integration && npm run test:e2e && npm run test:component"
   },
   "dependencies": {
+    "@ant-design/v5-patch-for-react-19": "^1.0.3",
     "@mobily/ts-belt": "^3.13.1",
     "antd": "^5.24.7",
     "axios": "^1.8.4",

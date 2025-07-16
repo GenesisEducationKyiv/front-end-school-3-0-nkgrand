@@ -1,29 +1,42 @@
-import React from 'react';
 import { Button } from 'antd';
+import { observer } from 'mobx-react-lite';
 import { Waveform } from './Waweform';
 import { PauseCircleOutlined, PlayCircleOutlined } from '@ant-design/icons';
+import { player } from '../../../stores/Player';
 
 interface TrackPlayerProps {
   id: string;
   fileUrl: string;
-  isPlaying: boolean;
-  onToggle: () => void;
-};
+}
 
-export const TrackPlayer = React.memo(
-  ({ id, fileUrl, isPlaying, onToggle }: TrackPlayerProps) => (
-    <div data-testid={`audio-player-${id}`}>
-      <Waveform
-        src={fileUrl}
-        playing={isPlaying}
-        dataTestId={`audio-progress-${id}`}
-      />
+export const TrackPlayer = observer(({ id, fileUrl }: TrackPlayerProps) => {
+  const isCurrent = player.activeTrackId === id;
+  return (
+    <div
+      data-testid={`audio-player-${id}`}
+      style={{ display: 'flex', alignItems: 'center', width: '100%' }}
+    >
       <Button
-        icon={isPlaying ? <PauseCircleOutlined /> : <PlayCircleOutlined />}
+        icon={isCurrent ? <PauseCircleOutlined /> : <PlayCircleOutlined />}
         type="link"
-        onClick={onToggle}
-        data-testid={`${isPlaying ? 'pause' : 'play'}-button-${id}`}
+        size="small"
+        onClick={() => {
+          if (isCurrent) {
+            player.pause();
+          } else {
+            player.play(id);
+          }
+        }}
+        data-testid={`${isCurrent ? 'pause' : 'play'}-button-${id}`}
+        style={{ marginRight: 8 }}
       />
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <Waveform
+          src={fileUrl}
+          playing={isCurrent}
+          dataTestId={`audio-progress-${id}`}
+        />
+      </div>
     </div>
-  )
-);
+  );
+});
