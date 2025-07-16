@@ -1,8 +1,7 @@
 import { Button, Checkbox, Table, Dropdown, Modal } from 'antd';
 import { observer } from 'mobx-react-lite';
-import { useMemo, useState } from 'react';
+import { useMemo, useState, lazy, Suspense } from 'react';
 import { type Track } from '../../schemas/track.schema';
-import { CellAudioPlayer } from './__components/CellAudioPlayer';
 import type { ColumnsType } from 'antd/es/table';
 import { useTrackStore } from '../../context/TrackStoreContext';
 import {
@@ -13,6 +12,12 @@ import {
 
 const DEFAULT_COVER_IMG =
   'https://www.contentviewspro.com/wp-content/uploads/2017/07/default_image.png';
+
+const CellAudioPlayer = lazy(() =>
+  import('./__components/CellAudioPlayer').then((module) => ({
+    default: module.CellAudioPlayer,
+  }))
+);
 
 export interface TracksTableProps {
   tracks: Track[];
@@ -108,7 +113,11 @@ export const TracksTable = observer((props: TracksTableProps) => {
         title: 'Player',
         key: 'play',
         width: 240,
-        render: (_, record) => <CellAudioPlayer track={record} />,
+        render: (_, record) => (
+          <Suspense fallback={null}>
+            <CellAudioPlayer track={record} />
+          </Suspense>
+        ),
       },
       {
         title: 'Actions',
