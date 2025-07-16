@@ -1,8 +1,10 @@
-import { Button, Checkbox, Table, Dropdown, Modal } from 'antd';
+import Checkbox from 'antd/es/checkbox';
+import Table from 'antd/es/table';
+import Dropdown from 'antd/es/dropdown';
+import Modal from 'antd/es/modal';
 import { observer } from 'mobx-react-lite';
-import { useMemo, useState } from 'react';
+import { useMemo, useState, lazy, Suspense } from 'react';
 import { type Track } from '../../schemas/track.schema';
-import { CellAudioPlayer } from './__components/CellAudioPlayer';
 import type { ColumnsType } from 'antd/es/table';
 import { useTrackStore } from '../../context/TrackStoreContext';
 import {
@@ -10,9 +12,17 @@ import {
   EditOutlined,
   DeleteOutlined,
 } from '@ant-design/icons';
+import { Button } from '../common/Button/Button';
+import { Tag } from '../common/Tag/Tag';
 
 const DEFAULT_COVER_IMG =
   'https://www.contentviewspro.com/wp-content/uploads/2017/07/default_image.png';
+
+const CellAudioPlayer = lazy(() =>
+  import('../common/AudioPlayer/CellAudioPlayer').then((module) => ({
+    default: module.CellAudioPlayer,
+  }))
+);
 
 export interface TracksTableProps {
   tracks: Track[];
@@ -52,6 +62,7 @@ export const TracksTable = observer((props: TracksTableProps) => {
             <img
               src={url || DEFAULT_COVER_IMG}
               alt="Cover"
+              loading="lazy"
               style={{
                 width: 50,
                 height: 50,
@@ -101,14 +112,26 @@ export const TracksTable = observer((props: TracksTableProps) => {
         key: 'genres',
         filters: genreFilters,
         onFilter: (value, record) => record.genres.includes(value as string),
-        render: (genres: string[]) => genres.join(', '),
+        render: (genres: string[]) => (
+          <>
+            {genres.map((genre) => (
+              <Tag key={genre} color="blue" data-testid={`genre-tag-${genre}`}>
+                {genre}
+              </Tag>
+            ))}
+          </>
+        ),
         width: 200,
       },
       {
         title: 'Player',
         key: 'play',
         width: 240,
-        render: (_, record) => <CellAudioPlayer track={record} />,
+        render: (_, record) => (
+          <Suspense fallback={null}>
+            <CellAudioPlayer track={record} />
+          </Suspense>
+        ),
       },
       {
         title: 'Actions',

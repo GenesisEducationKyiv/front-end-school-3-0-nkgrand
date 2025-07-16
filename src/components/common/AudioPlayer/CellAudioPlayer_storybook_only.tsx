@@ -1,15 +1,22 @@
-import { Upload, Button, Popconfirm, Tooltip } from 'antd';
+import Upload from 'antd/es/upload';
+import Popconfirm from 'antd/es/popconfirm';
+import Tooltip from 'antd/es/tooltip';
 import { DeleteOutlined, UploadOutlined } from '@ant-design/icons';
 import { type Track } from '../../../schemas/track.schema';
-import { TrackPlayer } from './TrackPlayer';
+import { lazy, Suspense } from 'react';
 import useNotification from 'antd/es/notification/useNotification';
 import { useTrackStore } from '../../../context/TrackStoreContext';
 import { type Result, ok, err } from 'neverthrow';
 import { isError } from '../../../utils/isError';
+import { Button } from '../Button/Button';
 
 interface Props {
   track: Track;
 }
+
+const TrackPlayer = lazy(() =>
+  import('../../pages/__components/TrackPlayer').then((module) => ({ default: module.TrackPlayer }))
+);
 
 export const CellAudioPlayer = ({ track }: Props) => {
   const trackStore = useTrackStore();
@@ -74,10 +81,12 @@ export const CellAudioPlayer = ({ track }: Props) => {
           }}
           data-testid={`audio-block-${track.id}`}
         >
-          <TrackPlayer
-            id={track.id}
-            fileUrl={`/api/files/${track.audioFile ?? ''}`}
-          />
+          <Suspense fallback={null}>
+            <TrackPlayer
+              id={track.id}
+              fileUrl={`/${track.audioFile ?? ''}`}
+            />
+          </Suspense>
           <Popconfirm
             title="Remove audio file?"
             onConfirm={() => {
