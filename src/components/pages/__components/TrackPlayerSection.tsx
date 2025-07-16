@@ -3,29 +3,21 @@ import { TrackPlayer } from "./TrackPlayer";
 
 interface AudioPlayerSectionProps {
   fileUrl: string;
-  isPlaying: boolean;
   onTogglePlay: () => void;
   onRemove: () => void;
   uploading: boolean;
   trackId: string;
-};
+}
 
 export const AudioPlayerSection = ({
   fileUrl,
-  isPlaying,
-  onTogglePlay,
   onRemove,
   uploading,
   trackId,
 }: AudioPlayerSectionProps) => (
   <div data-testid="audio-player">
     <Space direction="vertical" style={{ width: '100%' }}>
-      <TrackPlayer
-        id={trackId}
-        fileUrl={fileUrl}
-        isPlaying={isPlaying}
-        onToggle={onTogglePlay}
-      />
+      <TrackPlayer id={trackId} fileUrl={fileUrl} />
       <Popconfirm
         title="Remove audio?"
         onConfirm={onRemove}
