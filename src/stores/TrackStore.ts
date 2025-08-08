@@ -145,7 +145,7 @@ export class TrackStore {
 
     const result = await trackApi
       .addTrack(track)
-      .then((res) => ok(res.data))
+      .then((res) => ok(res))
       .catch((e: unknown) => err(isError(e) ? e : new Error(String(e))));
 
     return result.match<Result<Track, Error>>(
@@ -227,8 +227,8 @@ export class TrackStore {
     });
 
     const result = await trackApi
-      .updateTrack(updated)
-      .then((res) => ok(res.data))
+      .updateTrack(updated.id, updated)
+      .then((res) => ok(res))
       .catch((e: unknown) => err(isError(e) ? e : new Error(String(e))));
 
     return result.match<Result<Track, Error>>(
